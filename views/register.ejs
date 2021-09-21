@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro</title>
+    <link rel="stylesheet" href="css/registerStyles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="js/register.js"></script>
+  </head>
+
+  <body onLoad="myOnLoad()">
+    <div class="container_pr">
+      <div class="register_container">
+        <h1 class="register_title">Registro de Usuario</h1>
+        <div class="register_form">
+          <form action="/register" method="POST">
+            <select name="select_registro" class="select_registro">
+              <option hidden selected>Tipo de identificacion</option>
+              <option value="cedula">Cedula</option>
+              <option value="tarjeta de identidad">Tarjeta de identidad</option>
+              <option value="pasaporte">Pasaporte</option>
+            </select>
+            <input
+              class="text_input"
+              placeholder="Numero de documento"
+              type="text"
+              name="documento"
+            />
+            <input
+              name="name"
+              class="text_input"
+              placeholder="Nombres"
+              type="text"
+            />
+            <input
+              name="lastName"
+              class="text_input"
+              placeholder="Apellidos"
+              type="text"
+            />
+            <input
+              name="contrasena"
+              class="text_input"
+              placeholder="contrasena"
+              type="password"
+            />
+            <select name="sexo" class="select_registro">
+              <option hidden selected>Sexo</option>
+              <option value="masculino">Masculino</option>
+              <option value="femenino">Femenino</option>
+              <option value="otro">otro</option>
+            </select>
+            <input
+              name="fecha"
+              type="date"
+              value="12-12-1970"
+              max="2021-09-20"
+              class="date_input"
+            />
+            <select
+              name="departamento"
+              id="departamento"
+              class="select_registro"
+              onchange="cargarCiudades()"
+              ;
+            >
+              <option>Seleccione una Ciudad</option>
+            </select>
+
+            <select name="ciudad" id="ciudad" class="select_registro">
+              <option hidden selected>ciudad</option>
+            </select>
+            <input type="submit" class="btn" value="REGISTRARSE" />
+
+            <p class="change_Page">
+              <a href="/login">Iniciar sesion</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
