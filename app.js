@@ -1,10 +1,12 @@
 const express = require("express");
 const dotEnv = require("dotenv");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express();
 
 //motor de plantillas
+app.use(cors());
 app.set("view engine", "ejs");
 
 //carpeta public para archivos estaticos
