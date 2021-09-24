@@ -124,9 +124,6 @@ exports.login = async (req, res) => {
       [user],
       async (error, results) => {
         //comparar la contraseña ingresada con la de la bd
-        console.log(
-          !(await bcrypt.compareSync(contrasena, results[0].contrasena))
-        );
         if (
           results.length == 0 ||
           !(await bcrypt.compareSync(contrasena, results[0].contrasena))
