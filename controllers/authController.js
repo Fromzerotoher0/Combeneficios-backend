@@ -29,15 +29,21 @@ exports.register = async (req, res) => {
     let passHash = await bcrypt.hash(contrasena, 8);
 
     //expresion regular para validar la contraseña
-    let regex =
+    let regex_pass =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){6,15}$/;
 
-    console.log(fechaYHora);
-    if (regex.test(contrasena) == false) {
-      console.log(regex.test(contrasena));
+    let regex_email =
+      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+
+    if (regex_pass.test(contrasena) == false) {
       res.status(400).json({
         error: "true",
         msg: "la contraseña debe tener mas de 5  y menos de 16 caracteres , al menos una letra mayúscula ,al menos una letra minucula , al menos un dígito , sin espacios en blanco , al menos 1 caracter especial",
+      });
+    } else if (regex_email.test(correo) == false) {
+      res.status(400).json({
+        error: "true",
+        msg: "correo electronico no valido",
       });
     } else {
       connection.query(
@@ -45,7 +51,6 @@ exports.register = async (req, res) => {
         "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'combeneficios' AND TABLE_NAME = 'users'",
         async (error, results) => {
           titular_id = results[0].AUTO_INCREMENT;
-          console.log(titular_id);
         }
       );
 
@@ -55,7 +60,6 @@ exports.register = async (req, res) => {
         [departamento],
         async (error, results) => {
           departamento_string = results[0].departamento;
-          console.log(departamento_string);
         }
       );
       connection.query(
@@ -89,7 +93,6 @@ exports.register = async (req, res) => {
                 if (error) {
                   console.log(error);
                 } else {
-                  console.log(departamento_string);
                   res.status(200).json({
                     error: "false",
                     msg: "usuario creado",
