@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const connection = require("../database/db");
 const { promisify } = require("util");
+const { log } = require("console");
 
 //metodo para registrar un usuario
 exports.register = async (req, res) => {
@@ -13,6 +14,7 @@ exports.register = async (req, res) => {
     const apellidos = req.body.apellidos;
     const correo = req.body.correo;
     const contrasena = req.body.contrasena;
+    const telefono = req.body.telefono;
     const sexo = req.body.sexo;
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
@@ -82,7 +84,8 @@ exports.register = async (req, res) => {
                 departamento: departamento_string,
                 ciudad: ciudad,
                 contrasena: passHash,
-                paretesco_id: 1,
+                telefono: telefono,
+                parentesco_id: 1,
                 tipo_usuario: 1,
                 titular_id: titular_id,
                 created_at: fechaYHora,
@@ -148,10 +151,15 @@ exports.login = async (req, res) => {
           const userName = results[0].nombres;
           const lastName = results[0].apellidos;
           const id = results[0].id;
+          const ciudad = results[0].ciudad;
           //generacion del JWT
-          const token = jwt.sign({ id: id }, process.env.SECRET_KEY, {
-            expiresIn: process.env.JWT_EXPIRE,
-          });
+          const token = jwt.sign(
+            { id: id, ciudad: ciudad },
+            process.env.SECRET_KEY,
+            {
+              expiresIn: process.env.JWT_EXPIRE,
+            }
+          );
           //generacion de las cookies
           const cookiesOptions = {
             expires: new Date(
@@ -185,7 +193,7 @@ exports.isAuthenticated = async (req, res, next) => {
         process.env.SECRET_KEY
       );
       connection.query(
-        "SELECT * FROM user WHERE id = ?",
+        "SELECT * FROM users WHERE id = ?",
         [decodificar.id],
         (error, results) => {
           if (!results) {
