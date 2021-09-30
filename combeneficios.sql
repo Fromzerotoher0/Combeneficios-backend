@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `combeneficios`.`users` (
   `parentesco_id` INT NOT NULL,
   `tipo_usuario` INT NOT NULL,
   `titular_id` INT NOT NULL,
+  `imgUrl` VARCHAR(255) NOT NULL,
   `created_at` TIMESTAMP NULL,
   `updated_at` TIMESTAMP NULL,
   `estado` VARCHAR(45) NOT NULL,

@@ -19,6 +19,8 @@ exports.register = async (req, res) => {
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
+    const imgUrl = `http://localhost:3000/public/${req.file.filename}`;
+
     let titular_id = 0;
     let departamento_string = "";
     let hora = new Date().getHours();
@@ -28,7 +30,9 @@ exports.register = async (req, res) => {
     let date = new Date().toISOString().split("T")[0];
     fechaYHora = date + " " + fecha;
     //metodo para encriptar la contraseña
-    let passHash = await bcrypt.hash(contrasena, 8);
+
+    const salt = await bcrypt.genSalt(8);
+    let passHash = await bcrypt.hash(contrasena, salt);
 
     //expresion regular para validar la contraseña
     let regex_pass =
@@ -50,9 +54,12 @@ exports.register = async (req, res) => {
     } else {
       connection.query(
         //consulta para obtener el id del ultimo titular registrado y asignarselo
-        "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'combeneficios' AND TABLE_NAME = 'users'",
+        "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'bvs8i361eaofhxibhd6c' AND TABLE_NAME = 'users'",
         async (error, results) => {
           titular_id = results[0].AUTO_INCREMENT;
+          if (titular_id === null) {
+            titular_id = 1;
+          }
         }
       );
 
@@ -85,6 +92,7 @@ exports.register = async (req, res) => {
                 ciudad: ciudad,
                 contrasena: passHash,
                 telefono: telefono,
+                imgUrl: imgUrl,
                 parentesco_id: 1,
                 tipo_usuario: 1,
                 titular_id: titular_id,
@@ -241,4 +249,13 @@ exports.ciudades = async (req, res) => {
       });
     }
   );
+};
+//obtener listado de medicos
+exports.medicos = async (req, res) => {
+  connection.query("SELECT * from medico", function (error, results, fields) {
+    if (error) throw error;
+    res.status(200).json({
+      results,
+    });
+  });
 };
