@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 //llamar al router
 app.get("/", (req, res) => {
-  res.sendFile(`${process.cwd()}}/storage/code.png`);
+  res.sendFile(`${process.cwd()}/storage/code.png`);
 });
 app.use("/api", require("./routes/router"));
 
