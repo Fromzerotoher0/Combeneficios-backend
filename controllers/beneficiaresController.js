@@ -1,3 +1,5 @@
+const connection = require("../database/db");
+
 exports.register = async (req, res) => {
   try {
     //parametros obtenidos del body de la peticion
