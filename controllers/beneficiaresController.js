@@ -14,6 +14,7 @@ exports.register = async (req, res) => {
     const ciudad = req.body.ciudad;
     const imgUrl = `https://combeneficios.herokuapp.com/public/${req.file.filename}`;
     const titular_id = req.body.titular_id;
+    const parentesco_id = req.body.parentesco;
 
     let departamento_string = "";
     let hora = new Date().getHours();
@@ -45,6 +46,20 @@ exports.register = async (req, res) => {
         msg: "correo electronico no valido",
       });
     } else {
+      connection.query(
+        //consulta para verificar que el correo no este ocupado
+        "SELECT * from users where email = ?",
+        [correo],
+        async (error, results) => {
+          if (results.length > 0) {
+            res.status(400).json({
+              error: "true",
+              msg: "correo electronico en uso",
+            });
+          }
+        }
+      );
+
       connection.query(
         //consulta para obtener el id del ultimo titular registrado y asignarselo
         "SELECT MAX(id) AS id FROM users",
@@ -86,8 +101,8 @@ exports.register = async (req, res) => {
                 contrasena: passHash,
                 telefono: telefono,
                 imgUrl: imgUrl,
-                parentesco_id: 1,
-                tipo_usuario: 1,
+                parentesco_id: parentesco_id,
+                tipo_usuario: 2,
                 titular_id: titular_id,
                 created_at: fechaYHora,
                 updated_at: fechaYHora,
@@ -119,4 +134,16 @@ exports.register = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+exports.parentesco = async (req, res) => {
+  connection.query(
+    "SELECT * from parentesco",
+    function (error, results, fields) {
+      if (error) throw error;
+      res.status(200).json({
+        results,
+      });
+    }
+  );
 };

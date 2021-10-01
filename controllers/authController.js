@@ -53,7 +53,7 @@ exports.register = async (req, res) => {
       });
     } else {
       connection.query(
-        //consulta para obtener el nombre del departamento por medio de su id
+        //consulta para verificar que el correo no este ocupado
         "SELECT * from users where email = ?",
         [correo],
         async (error, results) => {
