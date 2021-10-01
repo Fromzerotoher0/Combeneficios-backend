@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
-    const imgUrl = `http://localhost:3000/public/${req.file.filename}`;
+    const imgUrl = `https://combeneficios.herokuapp.com/public/${req.file.filename}`;
 
     let titular_id = 0;
     let departamento_string = "";
