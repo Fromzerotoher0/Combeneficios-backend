@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require("../controllers/authController");
 const mailController = require("../controllers/mailController");
 const usersController = require("../controllers/usersController");
+const beneficiariesController = require("../controllers/beneficiaresController");
 const upload = require("../middlewares/storage");
 //rutas de las vistas
 router.get("/home", authController.isAuthenticated, (req, res) => {
@@ -27,4 +28,5 @@ router.post("/user", usersController.getUser);
 router.put("/user", usersController.updateUser);
 router.post("/beneficiaries", usersController.loadBeneficiaries);
 router.get("/medicos", authController.medicos);
+router.get("/parentesco", beneficiariesController.parentesco);
 module.exports = router;
