@@ -137,13 +137,10 @@ exports.register = async (req, res) => {
 };
 
 exports.parentesco = async (req, res) => {
-  connection.query(
-    "SELECT * from parentesco",
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  connection.query("SELECT * from parentesco", function (error, results) {
+    if (error) throw error;
+    res.status(200).json({
+      results,
+    });
+  });
 };
