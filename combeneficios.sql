@@ -8,20 +8,20 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema combeneficios
+-- Schema bt60wa8k2nl1ejk6irrq
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `combeneficios` ;
+DROP SCHEMA IF EXISTS `bt60wa8k2nl1ejk6irrq` ;
 
 -- -----------------------------------------------------
--- Schema combeneficios
+-- Schema bt60wa8k2nl1ejk6irrq
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `combeneficios` DEFAULT CHARACTER SET utf8 ;
-USE `combeneficios` ;
+CREATE SCHEMA IF NOT EXISTS `bt60wa8k2nl1ejk6irrq` DEFAULT CHARACTER SET utf8 ;
+USE `bt60wa8k2nl1ejk6irrq` ;
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`tipo_usuario`
+-- Table `bt60wa8k2nl1ejk6irrq`.`tipo_usuario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`tipo_usuario` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`tipo_usuario` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `descripcion` VARCHAR(45) NULL,
   PRIMARY KEY (`id`))
@@ -29,9 +29,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`parentesco`
+-- Table `bt60wa8k2nl1ejk6irrq`.`parentesco`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`parentesco` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`parentesco` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `parentesco` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
@@ -39,9 +39,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`users`
+-- Table `bt60wa8k2nl1ejk6irrq`.`users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`users` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`users` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipo_id` VARCHAR(45) NOT NULL,
   `nro_documento` INT NOT NULL,
@@ -67,26 +67,26 @@ CREATE TABLE IF NOT EXISTS `combeneficios`.`users` (
   INDEX `fk_users_users1_idx` (`titular_id` ASC) ,
   CONSTRAINT `fk_users_tipo_usuario1`
     FOREIGN KEY (`tipo_usuario`)
-    REFERENCES `combeneficios`.`tipo_usuario` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`tipo_usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_parentesco1`
     FOREIGN KEY (`parentesco_id`)
-    REFERENCES `combeneficios`.`parentesco` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`parentesco` (`id`)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION,
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_users_users1`
     FOREIGN KEY (`titular_id`)
-    REFERENCES `combeneficios`.`users` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`users` (`id`)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION)
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`municipios`
+-- Table `bt60wa8k2nl1ejk6irrq`.`municipios`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`municipios` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`municipios` (
   `id_municipio` INT NOT NULL,
   `municipio` VARCHAR(45) NOT NULL,
   `estado` INT NOT NULL,
@@ -96,9 +96,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`departamentos`
+-- Table `bt60wa8k2nl1ejk6irrq`.`departamentos`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`departamentos` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`departamentos` (
   `id_departamento` INT NOT NULL,
   `departamento` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id_departamento`))
@@ -106,9 +106,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`medico`
+-- Table `bt60wa8k2nl1ejk6irrq`.`medico`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`medico` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`medico` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nombres` VARCHAR(45) NOT NULL,
   `apellidos` VARCHAR(45) NOT NULL,
@@ -124,9 +124,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`agenda`
+-- Table `bt60wa8k2nl1ejk6irrq`.`agenda`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`agenda` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`agenda` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `fecha` DATE NOT NULL,
   `especialidad` VARCHAR(45) NOT NULL,
@@ -139,16 +139,16 @@ CREATE TABLE IF NOT EXISTS `combeneficios`.`agenda` (
   INDEX `fk_agenda_medico1_idx` (`medico_id` ASC) ,
   CONSTRAINT `fk_agenda_medico1`
     FOREIGN KEY (`medico_id`)
-    REFERENCES `combeneficios`.`medico` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`medico` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`cita`
+-- Table `bt60wa8k2nl1ejk6irrq`.`cita`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`cita` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`cita` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `agenda_id` INT NOT NULL,
   `beneficiario_id` INT NOT NULL,
@@ -157,21 +157,21 @@ CREATE TABLE IF NOT EXISTS `combeneficios`.`cita` (
   INDEX `fk_cita_users1_idx` (`beneficiario_id` ASC) ,
   CONSTRAINT `fk_cita_agenda1`
     FOREIGN KEY (`agenda_id`)
-    REFERENCES `combeneficios`.`agenda` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`agenda` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_cita_users1`
     FOREIGN KEY (`beneficiario_id`)
-    REFERENCES `combeneficios`.`users` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`users` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`tipo_estudio`
+-- Table `bt60wa8k2nl1ejk6irrq`.`tipo_estudio`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`tipo_estudio` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`tipo_estudio` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tipo_estudio` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
@@ -179,9 +179,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`estudios`
+-- Table `bt60wa8k2nl1ejk6irrq`.`estudios`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`estudios` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`estudios` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `titulo` VARCHAR(45) NULL,
   `fecha_obtencion` DATE NULL,
@@ -194,21 +194,21 @@ CREATE TABLE IF NOT EXISTS `combeneficios`.`estudios` (
   INDEX `fk_estudios_medico1_idx` (`medico_id` ASC) ,
   CONSTRAINT `fk_estudios_tipo_estudio1`
     FOREIGN KEY (`tipo_estudio`)
-    REFERENCES `combeneficios`.`tipo_estudio` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`tipo_estudio` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_estudios_medico1`
     FOREIGN KEY (`medico_id`)
-    REFERENCES `combeneficios`.`medico` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`medico` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `combeneficios`.`credencial`
+-- Table `bt60wa8k2nl1ejk6irrq`.`credencial`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `combeneficios`.`credencial` (
+CREATE TABLE IF NOT EXISTS `bt60wa8k2nl1ejk6irrq`.`credencial` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `beneficiario_id` INT NOT NULL,
   `fecha_vencimiento` DATE NOT NULL,
@@ -219,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `combeneficios`.`credencial` (
   INDEX `fk_credencial_users1_idx` (`beneficiario_id` ASC) ,
   CONSTRAINT `fk_credencial_users1`
     FOREIGN KEY (`beneficiario_id`)
-    REFERENCES `combeneficios`.`users` (`id`)
+    REFERENCES `bt60wa8k2nl1ejk6irrq`.`users` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

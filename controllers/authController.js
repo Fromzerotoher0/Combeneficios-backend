@@ -54,11 +54,12 @@ exports.register = async (req, res) => {
     } else {
       connection.query(
         //consulta para obtener el id del ultimo titular registrado y asignarselo
-        "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'bvs8i361eaofhxibhd6c' AND TABLE_NAME = 'users'",
+        "SELECT MAX(id) AS id FROM users",
         async (error, results) => {
-          titular_id = results[0].AUTO_INCREMENT;
-          if (titular_id === null) {
+          if (results[0].id === null) {
             titular_id = 1;
+          } else {
+            titular_id = results[0].id + 1;
           }
         }
       );
@@ -102,7 +103,10 @@ exports.register = async (req, res) => {
               },
               (error, results) => {
                 if (error) {
-                  console.log(error);
+                  res.status(400).json({
+                    error: "true",
+                    msg: error.message,
+                  });
                 } else {
                   res.status(200).json({
                     error: "false",

@@ -23,8 +23,8 @@ dotEnv.config({ path: "./env/.env" });
 app.use(cookieParser());
 
 //llamar al router
-app.use("/", require("./routes/router"));
+app.use("/api", require("./routes/router"));
 
-app.listen(3000, () => {
-  console.log("Server Up running in http://localhost:3000");
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server Up running in http://localhost:${process.env.PORT}`);
 });
