@@ -10,7 +10,8 @@ app.use(cors());
 app.set("view engine", "ejs");
 
 //carpeta public para archivos estaticos
-app.use("/public", express.static(`${process.cwd()}}/storage`));
+app.use("/public", express.static(path.join(__dirname, "storage")));
+// app.use("/public", express.static(`${process.cwd()}}/storage`));
 
 //procesar datos enviados desde forms
 app.use(express.urlencoded({ extended: true }));
