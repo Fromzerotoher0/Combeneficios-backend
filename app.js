@@ -23,6 +23,9 @@ dotEnv.config({ path: "./env/.env" });
 app.use(cookieParser());
 
 //llamar al router
+app.get("/", (req, res) => {
+  res.send("API combeneficios");
+});
 app.use("/api", require("./routes/router"));
 
 app.listen(process.env.PORT || 3000, () => {
