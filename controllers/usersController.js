@@ -1,5 +1,6 @@
 const connection = require("../database/db");
 
+//obtener usuario por su id
 exports.getUser = async (req, res) => {
   const id = req.body.id;
   connection.query(
@@ -13,6 +14,7 @@ exports.getUser = async (req, res) => {
   );
 };
 
+//actualizar datos de un usuario
 exports.updateUser = async (req, res) => {
   const id = req.body.id;
   const nombres = req.body.nombres;
@@ -30,7 +32,7 @@ exports.updateUser = async (req, res) => {
     }
   );
 };
-
+//Metodo para cargar los beneficiarios afiliados a un usuario
 exports.loadBeneficiaries = async (req, res) => {
   const id = req.body.id;
   connection.query(

@@ -1,5 +1,7 @@
 const connection = require("../database/db");
+const bcrypt = require("bcryptjs");
 
+//metodo para registrar a un beneficiario
 exports.register = async (req, res) => {
   try {
     //parametros obtenidos del body de la peticion
@@ -14,8 +16,8 @@ exports.register = async (req, res) => {
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
-    const imgUrl = `https://combeneficios.herokuapp.com/public/${req.file.filename}`;
-    const titular_id = req.body.titular_id;
+    const imgUrl = `http://45.63.109.10:7000/public/${req.file.filename}`;
+    let titular_id = req.body.titular_id;
     const parentesco_id = req.body.parentesco;
 
     let departamento_string = "";
@@ -58,18 +60,6 @@ exports.register = async (req, res) => {
               error: "true",
               msg: "correo electronico en uso",
             });
-          }
-        }
-      );
-
-      connection.query(
-        //consulta para obtener el id del ultimo titular registrado y asignarselo
-        "SELECT MAX(id) AS id FROM users",
-        async (error, results) => {
-          if (results[0].id === null) {
-            titular_id = 1;
-          } else {
-            titular_id = results[0].id + 1;
           }
         }
       );
@@ -136,13 +126,4 @@ exports.register = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-};
-
-exports.parentesco = async (req, res) => {
-  connection.query("SELECT * from parentesco", function (error, results) {
-    if (error) throw error;
-    res.status(200).json({
-      results,
-    });
-  });
 };
