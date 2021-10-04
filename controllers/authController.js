@@ -175,10 +175,11 @@ exports.login = async (req, res) => {
           const userName = results[0].nombres;
           const lastName = results[0].apellidos;
           const id = results[0].id;
+          const tipo_usuario = results[0].tipo_usuario;
           const ciudad = results[0].ciudad;
           //generacion del JWT
           const token = jwt.sign(
-            { id: id, ciudad: ciudad },
+            { id: id, ciudad: ciudad, tipo_usuario: tipo_usuario },
             process.env.SECRET_KEY,
             {
               expiresIn: process.env.JWT_EXPIRE,
