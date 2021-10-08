@@ -3,6 +3,8 @@ const dotEnv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
+const appError = require("./helpers/appError");
+const { errorHandler } = require("./middlewares/errorHandler");
 
 const app = express();
 
@@ -29,6 +31,13 @@ app.get("/", (req, res) => {
   res.sendFile(`${process.cwd()}/storage/code.png`);
 });
 app.use("/api", require("./routes/router"));
+app.all("*", (req, res, next) => {
+  next(
+    new appError(`no se encuentra la ruta ${req.originalUrl} en el servidor`)
+  );
+});
+
+app.use(errorHandler);
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Server Up running in http://localhost:${process.env.PORT}`);

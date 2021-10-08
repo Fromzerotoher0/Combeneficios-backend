@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
-    const imgUrl = `http://45.63.109.10:7000/public/${req.file.filename}`;
+    const imgUrl = `http://255.63.109.10:7000/public/${req.file.filename}`;
     let titular_id = req.body.titular_id;
     const parentesco_id = req.body.parentesco;
 
@@ -94,7 +94,7 @@ exports.register = async (req, res) => {
                 telefono: telefono,
                 imgUrl: imgUrl,
                 parentesco_id: parentesco_id,
-                tipo_usuario: 2,
+                tipo_usuario: 3,
                 titular_id: titular_id,
                 created_at: fechaYHora,
                 updated_at: fechaYHora,

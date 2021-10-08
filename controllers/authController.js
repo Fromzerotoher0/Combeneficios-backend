@@ -1,10 +1,9 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const connection = require("../database/db");
-const { promisify } = require("util");
 
 //metodo para registrar un usuario
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   try {
     //parametros obtenidos del body de la peticion
     const tipo = req.body.tipo_id;
@@ -107,7 +106,7 @@ exports.register = async (req, res) => {
                 telefono: telefono,
                 imgUrl: imgUrl,
                 parentesco_id: 1,
-                tipo_usuario: 1,
+                tipo_usuario: 2,
                 titular_id: titular_id,
                 created_at: fechaYHora,
                 updated_at: fechaYHora,
@@ -142,7 +141,7 @@ exports.register = async (req, res) => {
 };
 
 //metodo de autenticacion
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   try {
     //parametros del body
     const user = req.body.identificacion;
@@ -205,74 +204,6 @@ exports.login = async (req, res) => {
       }
     );
   } catch (error) {
-    console.log(error);
+    next(error);
   }
-};
-
-//validar JWT
-exports.isAuthenticated = async (req, res, next) => {
-  if (req.cookies.jwt) {
-    try {
-      const decodificar = await promisify(jwt.verify)(
-        req.cookies.jwt,
-        process.env.SECRET_KEY
-      );
-      connection.query(
-        "SELECT * FROM users WHERE id = ?",
-        [decodificar.id],
-        (error, results) => {
-          if (!results) {
-            return next();
-          }
-          req.user = results[0];
-          return next();
-        }
-      );
-    } catch (error) {
-      res.status(400).json({
-        error: error.message,
-        msg: "token invalido",
-      });
-    }
-  } else {
-    res.status(401).json({
-      msg: "token inexsistente",
-    });
-  }
-};
-
-//obtener listado de departamentos
-exports.departamentos = async (req, res) => {
-  connection.query(
-    "SELECT * from departamentos",
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
-};
-//obtener listado de ciudades
-exports.ciudades = async (req, res) => {
-  const departamento = req.body.departamento;
-  connection.query(
-    "SELECT * FROM municipios WHERE departamento_id = ?",
-    [departamento],
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
-};
-//obtener listado de medicos
-exports.medicos = async (req, res) => {
-  connection.query("SELECT * from medico", function (error, results, fields) {
-    if (error) throw error;
-    res.status(200).json({
-      results,
-    });
-  });
 };

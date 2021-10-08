@@ -2,6 +2,7 @@ const nodemailer = require("nodemailer");
 
 exports.emailCorrecto = (req, res) => {
   let params = req.body;
+  let to = req.body.correo;
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -17,13 +18,13 @@ exports.emailCorrecto = (req, res) => {
   });
   let MailOptions = {
     from: "forgot Your password",
-    to: "ander.er985@gmail.com",
+    to: `${to}`,
     subject: params.asunto,
 
     html: `
             <p style='font-size:20px'><strong>Solicitud:</strong> ${params.asunto}</p>
             <p style='font-size:20px' ><strong>Nombre:</strong> ${params.nombre}</p>
-            <p style='font-size:20px'><strong>Correo:</strong> ${params.email}</p>
+            <p style='font-size:20px'><strong>Correo:</strong> ${params.correo}</p>
             <p style='font-size:20px'><strong>Telefono:</strong> ${params.telefono}</p>
             <p style='font-size:20px'><strong>Mensaje:</strong>  ${params.mensaje}</p>
             `,
