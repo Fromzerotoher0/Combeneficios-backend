@@ -1,4 +1,4 @@
-const connection = require("../database/db");
+const connection = require("../../database/db");
 const nodemailer = require("nodemailer");
 
 exports.solicitudes = async (req, res) => {

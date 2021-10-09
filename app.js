@@ -3,8 +3,9 @@ const dotEnv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
-const appError = require("./helpers/appError");
-const { errorHandler } = require("./middlewares/errorHandler");
+const router = require("./src/routes/routes");
+const appError = require("./src/helpers/appError");
+const { errorHandler } = require("./src/middlewares/errorHandler");
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //variables de entorno
-dotEnv.config({ path: "./env/.env" });
+dotEnv.config({ path: "./src/env/.env" });
 
 //uso de cookies
 app.use(cookieParser());
@@ -30,7 +31,7 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.sendFile(`${process.cwd()}/storage/code.png`);
 });
-app.use("/api", require("./routes/router"));
+app.use("/api", router);
 app.all("*", (req, res, next) => {
   next(
     new appError(`no se encuentra la ruta ${req.originalUrl} en el servidor`)

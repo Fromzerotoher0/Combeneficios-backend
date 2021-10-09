@@ -1,4 +1,4 @@
-const connection = require("../database/db");
+const connection = require("../../database/db");
 const bcrypt = require("bcryptjs");
 
 //metodo para registrar a un beneficiario
@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
-    const imgUrl = `http://255.63.109.10:7000/public/${req.file.filename}`;
+    const imgUrl = `http://45.63.109.10:7000/public/${req.file.filename}`;
     let titular_id = req.body.titular_id;
     const parentesco_id = req.body.parentesco;
 
@@ -60,65 +60,67 @@ exports.register = async (req, res) => {
               error: "true",
               msg: "correo electronico en uso",
             });
-          }
-        }
-      );
-      connection.query(
-        //consulta para obtener el nombre del departamento por medio de su id
-        "SELECT departamento from departamentos d where id_departamento = ?",
-        [departamento],
-        async (error, results) => {
-          departamento_string = results[0].departamento;
-        }
-      );
-      connection.query(
-        //consulta para verificar que el usuario no exista en la base de datos
-        "SELECT * FROM users where nro_documento = ?",
-        [documento],
-        async (error, results) => {
-          if (results.length == 0) {
+          } else {
             connection.query(
-              //insert del usuario en la base de datos
-              "INSERT INTO users SET ?",
-              {
-                tipo_id: tipo,
-                nro_documento: documento,
-                nombres: nombres,
-                apellidos: apellidos,
-                sexo: sexo,
-                email: correo,
-                fecha_nacimiento: fecha_nac,
-                departamento: departamento_string,
-                ciudad: ciudad,
-                contrasena: passHash,
-                telefono: telefono,
-                imgUrl: imgUrl,
-                parentesco_id: parentesco_id,
-                tipo_usuario: 3,
-                titular_id: titular_id,
-                created_at: fechaYHora,
-                updated_at: fechaYHora,
-                estado: "activo",
-              },
-              (error, results) => {
-                if (error) {
+              //consulta para obtener el nombre del departamento por medio de su id
+              "SELECT departamento from departamentos d where id_departamento = ?",
+              [departamento],
+              async (error, results) => {
+                departamento_string = results[0].departamento;
+              }
+            );
+
+            connection.query(
+              //consulta para verificar que el usuario no exista en la base de datos
+              "SELECT * FROM users where nro_documento = ?",
+              [documento],
+              async (error, results) => {
+                if (results.length == 0) {
+                  connection.query(
+                    //insert del usuario en la base de datos
+                    "INSERT INTO users SET ?",
+                    {
+                      tipo_id: tipo,
+                      nro_documento: documento,
+                      nombres: nombres,
+                      apellidos: apellidos,
+                      sexo: sexo,
+                      email: correo,
+                      fecha_nacimiento: fecha_nac,
+                      departamento: departamento_string,
+                      ciudad: ciudad,
+                      contrasena: passHash,
+                      telefono: telefono,
+                      imgUrl: imgUrl,
+                      parentesco_id: parentesco_id,
+                      tipo_usuario: 3,
+                      titular_id: titular_id,
+                      created_at: fechaYHora,
+                      updated_at: fechaYHora,
+                      estado: "activo",
+                    },
+                    (error, results) => {
+                      if (error) {
+                        res.status(400).json({
+                          error: "true",
+                          msg: error.message,
+                        });
+                      } else {
+                        res.status(200).json({
+                          error: "false",
+                          msg: "usuario creado",
+                        });
+                      }
+                    }
+                  );
+                } else {
                   res.status(400).json({
                     error: "true",
-                    msg: error.message,
-                  });
-                } else {
-                  res.status(200).json({
-                    error: "false",
-                    msg: "usuario creado",
+                    msg: "el usuario ya existe en la base de datos",
                   });
                 }
               }
             );
-          } else {
-            res.status(400).json({
-              error: "true",
-              msg: "el usuario ya existe en la base de datos",
-            });
           }
         }
       );

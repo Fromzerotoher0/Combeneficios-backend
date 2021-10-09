@@ -1,4 +1,4 @@
-const connection = require("../database/db");
+const connection = require("../../database/db");
 
 //obtener usuario por su id
 exports.getUser = async (req, res) => {

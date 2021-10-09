@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const connection = require("../database/db");
+const connection = require("../../database/db");
 
 //metodo para registrar un usuario
 exports.register = async (req, res, next) => {
@@ -26,6 +26,9 @@ exports.register = async (req, res, next) => {
     let fecha = hora + ":" + minuto + ":" + segundo;
     let date = new Date().toISOString().split("T")[0];
     fechaYHora = date + " " + fecha;
+
+    let correoRepetido = [];
+
     //metodo para encriptar la contraseña
     const salt = await bcrypt.genSalt(8);
     let passHash = await bcrypt.hash(contrasena, salt);
@@ -50,20 +53,6 @@ exports.register = async (req, res, next) => {
       });
     } else {
       connection.query(
-        //consulta para verificar que el correo no este ocupado
-        "SELECT * from users where email = ?",
-        [correo],
-        async (error, results) => {
-          if (results.length > 0) {
-            res.status(400).json({
-              error: "true",
-              msg: "correo electronico en uso",
-            });
-          }
-        }
-      );
-
-      connection.query(
         //consulta para obtener el id del ultimo titular registrado y asignarselo
         "SELECT MAX(id) AS id FROM users",
         async (error, results) => {
@@ -74,63 +63,77 @@ exports.register = async (req, res, next) => {
           }
         }
       );
-
       connection.query(
-        //consulta para obtener el nombre del departamento por medio de su id
-        "SELECT departamento from departamentos d where id_departamento = ?",
-        [departamento],
+        //consulta para verificar que el correo no este ocupado
+        "SELECT * from users where email = ?",
+        [correo],
         async (error, results) => {
-          departamento_string = results[0].departamento;
-        }
-      );
-      connection.query(
-        //consulta para verificar que el usuario no exista en la base de datos
-        "SELECT * FROM users where nro_documento = ?",
-        [documento],
-        async (error, results) => {
-          if (results.length == 0) {
+          if (results.length > 0) {
+            res.status(400).json({
+              error: "true",
+              msg: "correo electronico en uso",
+            });
+          } else {
             connection.query(
-              //insert del usuario en la base de datos
-              "INSERT INTO users SET ?",
-              {
-                tipo_id: tipo,
-                nro_documento: documento,
-                nombres: nombres,
-                apellidos: apellidos,
-                sexo: sexo,
-                email: correo,
-                fecha_nacimiento: fecha_nac,
-                departamento: departamento_string,
-                ciudad: ciudad,
-                contrasena: passHash,
-                telefono: telefono,
-                imgUrl: imgUrl,
-                parentesco_id: 1,
-                tipo_usuario: 2,
-                titular_id: titular_id,
-                created_at: fechaYHora,
-                updated_at: fechaYHora,
-                estado: "activo",
-              },
-              (error, results) => {
-                if (error) {
+              //consulta para obtener el nombre del departamento por medio de su id
+              "SELECT departamento from departamentos d where id_departamento = ?",
+              [departamento],
+              async (error, results) => {
+                departamento_string = results[0].departamento;
+              }
+            );
+
+            connection.query(
+              //consulta para verificar que el usuario no exista en la base de datos
+              "SELECT * FROM users where nro_documento = ?",
+              [documento],
+              async (error, results) => {
+                if (results.length == 0) {
+                  connection.query(
+                    //insert del usuario en la base de datos
+                    "INSERT INTO users SET ?",
+                    {
+                      tipo_id: tipo,
+                      nro_documento: documento,
+                      nombres: nombres,
+                      apellidos: apellidos,
+                      sexo: sexo,
+                      email: correo,
+                      fecha_nacimiento: fecha_nac,
+                      departamento: departamento_string,
+                      ciudad: ciudad,
+                      contrasena: passHash,
+                      telefono: telefono,
+                      imgUrl: imgUrl,
+                      parentesco_id: 1,
+                      tipo_usuario: 2,
+                      titular_id: titular_id,
+                      created_at: fechaYHora,
+                      updated_at: fechaYHora,
+                      estado: "activo",
+                    },
+                    (error, results) => {
+                      if (error) {
+                        res.status(400).json({
+                          error: "true",
+                          msg: error.message,
+                        });
+                      } else {
+                        res.status(200).json({
+                          error: "false",
+                          msg: "usuario creado",
+                        });
+                      }
+                    }
+                  );
+                } else {
                   res.status(400).json({
                     error: "true",
-                    msg: error.message,
-                  });
-                } else {
-                  res.status(200).json({
-                    error: "false",
-                    msg: "usuario creado",
+                    msg: "el usuario ya existe en la base de datos",
                   });
                 }
               }
             );
-          } else {
-            res.status(400).json({
-              error: "true",
-              msg: "el usuario ya existe en la base de datos",
-            });
           }
         }
       );
