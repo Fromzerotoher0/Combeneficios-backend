@@ -19,6 +19,8 @@ exports.aceptar = async (req, res) => {
   const especializacion = req.body.especializaciones_id;
   const direccion = req.body.direccion;
   const to = req.body.correo;
+  let nombres = "";
+  let apellidos = "";
   let hora = new Date().getHours();
   let minuto = new Date().getMinutes();
   let segundo = new Date().getSeconds();
@@ -44,10 +46,22 @@ exports.aceptar = async (req, res) => {
   );
 
   connection.query(
+    `select nombres,apellidos from users
+    WHERE id=?`,
+    [id],
+    (error, results) => {
+      nombres = results[0].nombres;
+      apellidos = results[0].apellidos;
+    }
+  );
+
+  connection.query(
     //insert del usuario en la base de datos
     "INSERT INTO medico SET ?",
     {
       users_id: id,
+      nombres: nombres,
+      apellidos: apellidos,
       direccion: direccion,
       modalidad_cita: modalidad,
       especializaciones_id: especializacion,

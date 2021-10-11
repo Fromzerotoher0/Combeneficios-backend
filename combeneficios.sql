@@ -108,7 +108,7 @@ ENGINE = InnoDB;
 -- Table `combeneficios_test`.`especializaciones`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `combeneficios_test`.`especializaciones` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `descripcion` VARCHAR(45) NOT NULL,
   `created_at` VARCHAR(45) NOT NULL,
   `estado` VARCHAR(45) NOT NULL,
@@ -122,6 +122,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `combeneficios_test`.`medico` (
   `id` INT NOT NULL AUTO_INCREMENT,
+  `nombres` VARCHAR(45) NOT NULL,
+  `apellidos` VARCHAR(45) NOT NULL,
   `users_id` INT NOT NULL,
   `direccion` VARCHAR(45) NOT NULL,
   `modalidad_cita` VARCHAR(45) NOT NULL,
@@ -252,7 +254,7 @@ ENGINE = InnoDB;
 -- Table `combeneficios_test`.`solicitud`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `combeneficios_test`.`solicitud` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `nombres` VARCHAR(255) NOT NULL,
   `users_id` INT NOT NULL,
   `especializaciones_id` INT NOT NULL,
