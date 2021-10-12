@@ -17,7 +17,7 @@ exports.register = async (req, res, next) => {
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
-    const imgUrl = `http://45.63.109.10:7000/public/${req.file.filename}`;
+    const imgUrl = `http://localhost:7000/public/${req.file.filename}`;
     let titular_id = 0;
     let departamento_string = "";
     let hora = new Date().getHours();

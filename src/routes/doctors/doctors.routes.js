@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const upload = require("../../middlewares/storage");
 const {
   register,
   especializaciones,
@@ -6,6 +7,7 @@ const {
   medicosEspecialization,
   medicosPregrade,
   medicos,
+  solicitudEstudio,
 } = require("./doctorsController");
 const router = Router();
 
@@ -18,7 +20,13 @@ router.post("/medico", medicosById);
 router.post("/medico/estudios", medicosPregrade);
 //obtener especializaciones de un medico
 router.post("/medico/especializacion", medicosEspecialization);
-//rutas de solicitudes
+//obtener todas las especializaciones
 router.get("/especializaciones", especializaciones);
+//solicitud para añadir una especializacion a un medico
+router.post(
+  "/medico/agregarEspecializacion",
+  upload.single("image"),
+  solicitudEstudio
+);
 
 module.exports = router;
