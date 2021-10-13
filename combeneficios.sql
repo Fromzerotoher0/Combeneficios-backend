@@ -301,6 +301,8 @@ CREATE TABLE IF NOT EXISTS `combeneficios_test`.`solicitud_estudio` (
   `medico_id` INT NOT NULL,
   `especializaciones_id` INT NOT NULL,
   `imgUrl` VARCHAR(255) NOT NULL,
+  `universidad` VARCHAR(255) NOT NULL,
+  `fecha_obtencion` DATE NOT NULL,
   `created_at` DATE NOT NULL,
   `updated_at` DATE NOT NULL,
   `estado` VARCHAR(45) NOT NULL,

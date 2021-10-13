@@ -95,19 +95,24 @@ exports.register = async (req, res) => {
   }
 };
 //obtener listado de medicos
+
 exports.medicos = async (req, res) => {
-  connection.query("SELECT * from medico", function (error, results, fields) {
-    if (error) throw error;
-    res.status(200).json({
-      results,
-    });
-  });
+  connection.query(
+    "SELECT  medico.id , medico.imgUrl , medico.nombres , medico.apellidos , descripcion from medico inner join especializaciones e on e.id=medico.especializaciones_id",
+    function (error, results, fields) {
+      console.log(results);
+      if (error) throw error;
+      res.status(200).json({
+        results,
+      });
+    }
+  );
 };
 //obtener un medico por su id
 exports.medicosById = async (req, res) => {
   const id = req.body.id;
   connection.query(
-    "SELECT * from medico where id = ?",
+    "SELECT * from medico inner join especializaciones e on e.id=medico.especializaciones_id where medico.id = ?",
     [id],
     function (error, results, fields) {
       if (error) throw error;
@@ -162,7 +167,9 @@ exports.solicitudEstudio = async (req, res) => {
   let nombres = "";
   let apellidos = "";
   let documentos = "";
+  const universidad = req.body.universidad;
   const medico_id = req.body.medico_id;
+  const fecha_obtencion = req.body.fecha_obtencion;
   const especializaciones_id = req.body.especializaciones_id;
   const imgUrl = `http://localhost:7000/public/${req.file.filename}`;
   let hora = new Date().getHours();
@@ -190,6 +197,8 @@ exports.solicitudEstudio = async (req, res) => {
           medico_id: id,
           especializaciones_id: especializaciones_id,
           imgUrl: imgUrl,
+          universidad: universidad,
+          fecha_obtencion: fecha_obtencion,
           created_at: fechaYHora,
           updated_at: fechaYHora,
           estado: "proceso",
@@ -198,6 +207,18 @@ exports.solicitudEstudio = async (req, res) => {
           console.log("solicitud enviada");
         }
       );
+    }
+  );
+};
+//lista de universidades
+exports.universidades = async (req, res) => {
+  connection.query(
+    "SELECT * from universidades",
+    function (error, results, fields) {
+      if (error) throw error;
+      res.status(200).json({
+        results,
+      });
     }
   );
 };

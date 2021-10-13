@@ -1,6 +1,7 @@
 const connection = require("../../database/db");
 const nodemailer = require("nodemailer");
 
+//lista de solicitudes para ser medico
 exports.solicitudes = async (req, res) => {
   connection.query(
     "SELECT * from solicitud where estado = 'proceso'",
@@ -12,7 +13,7 @@ exports.solicitudes = async (req, res) => {
     }
   );
 };
-
+//aceptar solicitud para ser medico
 exports.aceptar = async (req, res) => {
   const id = req.body.id;
   const modalidad = req.body.modalidad;
@@ -70,16 +71,6 @@ exports.aceptar = async (req, res) => {
               (error, results) => {}
             );
 
-            connection.query(
-              `UPDATE solicitud SET estado='aprobada'
-              WHERE users_id=?`,
-              [id],
-              (error, results) => {
-                console.log("aprobado");
-              }
-            );
-
-            ///xd
             connection.query(
               `UPDATE solicitud SET estado='aprobada'
               WHERE users_id=?`,
@@ -198,7 +189,7 @@ exports.aceptar = async (req, res) => {
     }
   });
 };
-//rechazar solicitud
+//rechazar solicitud para ser medico
 exports.rechazar = async (req, res) => {
   const id = req.body.id;
   const to = req.body.correo;
@@ -243,4 +234,62 @@ exports.rechazar = async (req, res) => {
       res.status(200).json(req.body);
     }
   });
+};
+//lista de solicitudes para agregar especializacion a un medico
+exports.solicitudesEstudio = async (req, res) => {
+  connection.query(
+    "SELECT * from solicitud_estudio inner join especializaciones e on e.id=solicitud_estudio.especializaciones_id where solicitud_estudio.estado = 'proceso'",
+    function (error, results, fields) {
+      if (error) throw error;
+      res.status(200).json({
+        results,
+      });
+    }
+  );
+};
+//aceptar solicitud de estudio
+exports.aceptarEstudio = async (req, res) => {
+  const titulo = req.body.titulo;
+  const universidad = req.body.universidad;
+  const tipo_estudio = 2;
+  const medico_id = req.body.medico_id;
+  const fecha_obtencion = req.body.fecha_obtencion;
+  let hora = new Date().getHours();
+  let minuto = new Date().getMinutes();
+  let segundo = new Date().getSeconds();
+  let fecha = hora + ":" + minuto + ":" + segundo;
+  let date = new Date().toISOString().split("T")[0];
+  let fechaYHora = date + " " + fecha;
+  console.log(titulo, universidad, medico_id, fecha_obtencion);
+  connection.query(
+    "insert into estudios set ?",
+    {
+      titulo: titulo,
+      fecha_obtencion: fecha_obtencion,
+      universidad: universidad,
+      tipo_estudio: tipo_estudio,
+      medico_id: medico_id,
+      created_at: fechaYHora,
+      updated_at: fechaYHora,
+      estado: "activo",
+    },
+    (error, results) => {
+      if (error === null) {
+        connection.query(
+          `UPDATE solicitud_estudio SET estado='aprobada'
+          WHERE medico_id=?`,
+          [medico_id],
+          (error, results) => {
+            console.log("aprobado");
+          }
+        );
+        res.status(200).json({
+          error: "false",
+          msg: "solicitud aprobada",
+        });
+      } else {
+        console.log(error);
+      }
+    }
+  );
 };

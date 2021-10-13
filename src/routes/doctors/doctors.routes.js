@@ -8,6 +8,7 @@ const {
   medicosPregrade,
   medicos,
   solicitudEstudio,
+  universidades,
 } = require("./doctorsController");
 const router = Router();
 
@@ -28,5 +29,7 @@ router.post(
   upload.single("image"),
   solicitudEstudio
 );
+//lista de universidades
+router.get("/universidades", universidades);
 
 module.exports = router;
