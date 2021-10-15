@@ -31,8 +31,21 @@ module.exports = {
       const apellidos = req.body.apellidos;
       const telefono = req.body.telefono;
       const email = req.body.email;
+      let hora = new Date().getHours();
+      let minuto = new Date().getMinutes();
+      let segundo = new Date().getSeconds();
+      let fecha = hora + ":" + minuto + ":" + segundo;
+      let date = new Date().toISOString().split("T")[0];
+      let fechaYHora = date + " " + fecha;
 
-      const result = await updateUser(id, nombres, apellidos, telefono, email);
+      const result = await updateUser(
+        id,
+        nombres,
+        apellidos,
+        telefono,
+        email,
+        fechaYHora
+      );
       res.status(200).json({
         error: false,
         msg: "datos actualizados",

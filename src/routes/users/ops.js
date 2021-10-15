@@ -17,7 +17,7 @@ module.exports = {
     });
   },
 
-  updateUser(id, nombres, apellidos, telefono, email) {
+  updateUser(id, nombres, apellidos, telefono, email, fechaYHora) {
     return new Promise(async (resolve, reject) => {
       connection.query(
         "select * from users where id = ?",
@@ -25,7 +25,7 @@ module.exports = {
         (error, results) => {
           if (results.lenght > 0) {
             connection.query(
-              `UPDATE users SET nombres='${nombres}' , apellidos='${apellidos}',telefono='${telefono}',email='${email}'
+              `UPDATE users SET nombres='${nombres}' , apellidos='${apellidos}',telefono='${telefono}',email='${email}',updated_at=${fechaYHora}
                 WHERE id=?`,
               [id],
               (error, results) => {
