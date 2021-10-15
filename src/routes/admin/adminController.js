@@ -250,46 +250,141 @@ exports.solicitudesEstudio = async (req, res) => {
 //aceptar solicitud de estudio
 exports.aceptarEstudio = async (req, res) => {
   const titulo = req.body.titulo;
+  const users_id = req.body.users_id;
   const universidad = req.body.universidad;
   const tipo_estudio = 2;
   const medico_id = req.body.medico_id;
   const fecha_obtencion = req.body.fecha_obtencion;
+  let to = "";
   let hora = new Date().getHours();
   let minuto = new Date().getMinutes();
   let segundo = new Date().getSeconds();
   let fecha = hora + ":" + minuto + ":" + segundo;
   let date = new Date().toISOString().split("T")[0];
   let fechaYHora = date + " " + fecha;
-  console.log(titulo, universidad, medico_id, fecha_obtencion);
+
   connection.query(
-    "insert into estudios set ?",
-    {
-      titulo: titulo,
-      fecha_obtencion: fecha_obtencion,
-      universidad: universidad,
-      tipo_estudio: tipo_estudio,
-      medico_id: medico_id,
-      created_at: fechaYHora,
-      updated_at: fechaYHora,
-      estado: "activo",
-    },
+    "select email from users inner join solicitud_estudio e on users.id = ?",
+    [users_id],
     (error, results) => {
-      if (error === null) {
-        connection.query(
-          `UPDATE solicitud_estudio SET estado='aprobada'
-          WHERE medico_id=?`,
-          [medico_id],
-          (error, results) => {
-            console.log("aprobado");
+      to = results[0].email;
+      connection.query(
+        "insert into estudios set ?",
+        {
+          titulo: titulo,
+          fecha_obtencion: fecha_obtencion,
+          universidad: universidad,
+          tipo_estudio: tipo_estudio,
+          medico_id: medico_id,
+          created_at: fechaYHora,
+          updated_at: fechaYHora,
+          estado: "activo",
+        },
+        (error, results) => {
+          if (error === null) {
+            connection.query(
+              `UPDATE solicitud_estudio SET estado='aprobada'
+                WHERE medico_id=?`,
+              [medico_id],
+              (error, results) => {
+                console.log("aprobado");
+              }
+            );
+
+            const transporter = nodemailer.createTransport({
+              host: "smtp.gmail.com",
+              port: 465,
+              secure: true,
+              auth: {
+                user: "ander.er985@gmail.com",
+                pass: "yfwlkdblonawxuap",
+              },
+              tls: {
+                rejectUnauthorized: false,
+              },
+            });
+            let MailOptions = {
+              from: "forgot Your password",
+              to: `${to}`,
+              subject: "solicitud aprobada",
+
+              html: `
+                        <p style='font-size:20px'>felicidades su solicitud de especializacion ha sido <strong>Aprobada</strong></p>
+
+                        `,
+            };
+
+            transporter.sendMail(MailOptions, (error, info) => {
+              if (error) {
+                res.status(500).send(error.message);
+              } else {
+                console.log("email enviado");
+                res.status(200).json(req.body);
+              }
+            });
+
+            res.status(200).json({
+              error: "false",
+              msg: "solicitud aprobada",
+            });
+          } else {
+            console.log(error);
           }
-        );
-        res.status(200).json({
-          error: "false",
-          msg: "solicitud aprobada",
-        });
-      } else {
-        console.log(error);
-      }
+        }
+      );
+    }
+  );
+};
+//rechazar solicitud de estudio
+exports.rechazarEstudio = async (req, res) => {
+  const medico_id = req.body.medico_id;
+  const users_id = req.body.users_id;
+  console.log(medico_id, users_id);
+
+  connection.query(
+    "select email from users inner join solicitud_estudio e on users.id = ?",
+    [users_id],
+    (error, results) => {
+      to = results[0].email;
+      connection.query(
+        `UPDATE solicitud_estudio SET estado='rechazada'
+          WHERE medico_id=?`,
+        [medico_id],
+        (error, results) => {
+          console.log("rechazado");
+        }
+      );
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "ander.er985@gmail.com",
+          pass: "yfwlkdblonawxuap",
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+      let MailOptions = {
+        from: "forgot Your password",
+        to: `${to}`,
+        subject: "solicitud aprobada",
+
+        html: `
+                  <p style='font-size:20px'>lo sentimos su solicitud de especializacion ha sido <strong>Rechazada</strong></p>
+
+                  `,
+      };
+
+      transporter.sendMail(MailOptions, (error, info) => {
+        if (error) {
+          res.status(500).send(error.message);
+        } else {
+          console.log("email enviado");
+          res.status(200).json(req.body);
+        }
+      });
     }
   );
 };

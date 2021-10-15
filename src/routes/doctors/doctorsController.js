@@ -191,6 +191,7 @@ exports.solicitudEstudio = async (req, res) => {
       connection.query(
         "INSERT INTO solicitud_estudio set ?",
         {
+          users_id: medico_id,
           nombres: nombres,
           apellidos: apellidos,
           documento: documento,
@@ -223,4 +224,70 @@ exports.universidades = async (req, res) => {
   );
 };
 //añadir cita a agenda
-exports.agenda = async (req, res) => {};
+exports.agenda = async (req, res) => {
+  const fecha_cita = req.body.fecha;
+  const hora_cita = req.body.hora;
+  const medico_id = req.body.medico_id;
+  const tarifa = req.body.tarifa;
+  const especialidad = req.body.especialidad;
+  let hora = new Date().getHours();
+  let minuto = new Date().getMinutes();
+  let segundo = new Date().getSeconds();
+  let fecha = hora + ":" + minuto + ":" + segundo;
+  let date = new Date().toISOString().split("T")[0];
+  let fechaYHora = date + " " + fecha;
+
+  connection.query(
+    "insert into agenda set ?",
+    {
+      fecha: fecha_cita,
+      hora: hora_cita,
+      especialidad: especialidad,
+      medico_id: medico_id,
+      tarifa: tarifa,
+      created_at: fechaYHora,
+      updated_at: fechaYHora,
+      estado: "activo",
+    },
+    (error, results) => {
+      if (error == null) {
+        res.status(200).json({
+          error: "false",
+          msg: "agenda añadida",
+        });
+      } else {
+        res.status(400).json({
+          error: "true",
+          msg: error.message,
+        });
+      }
+    }
+  );
+};
+//listado de citas disponibles
+exports.agendaDisponible = async (req, res) => {
+  connection.query(
+    "SELECT * from agenda where estado = 'activo'",
+    function (error, results, fields) {
+      if (error) throw error;
+      res.status(200).json({
+        results,
+      });
+    }
+  );
+};
+//listado de citas disponibles de un medico
+exports.agendaMedico = async (req, res) => {
+  const medico_id = req.body.medico_id;
+  console.log(medico_id);
+  connection.query(
+    "SELECT * from agenda where medico_id = ?",
+    [medico_id],
+    function (error, results, fields) {
+      if (error) throw error;
+      res.status(200).json({
+        results,
+      });
+    }
+  );
+};

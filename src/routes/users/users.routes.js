@@ -1,22 +1,26 @@
 const { Router } = require("express");
 const {
-  getUser,
-  loadBeneficiaries,
-  updateUser,
-  ciudades,
-  departamentos,
+  getBeneficiariesController,
+  updateUserController,
+  getCiudadesController,
+  getDepartamentosController,
+  citaController,
+  getUserController,
 } = require("./usersController");
+
 const router = Router();
 
 //metodo para obtener los datos de un usuario
-router.post("/user", getUser);
+router.post("/user", getUserController);
 //metodo para actualizar los datos de un usuario/beneficiario
-router.put("/user", updateUser);
+router.put("/user", updateUserController);
 //metodo para obtener los beneficiarios afiliados a un usuario
-router.post("/beneficiaries", loadBeneficiaries);
+router.post("/beneficiaries", getBeneficiariesController);
 //obtener listado de ciudades
-router.post("/ciudades", ciudades);
+router.post("/ciudades", getCiudadesController);
 //obtener listado de departamentos
-router.get("/departamentos", departamentos);
+router.get("/departamentos", getDepartamentosController);
+//agendar una cita
+router.post("/cita", citaController);
 
 module.exports = router;

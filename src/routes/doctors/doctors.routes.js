@@ -9,6 +9,9 @@ const {
   medicos,
   solicitudEstudio,
   universidades,
+  agenda,
+  agendaDisponible,
+  agendaMedico,
 } = require("./doctorsController");
 const router = Router();
 
@@ -31,5 +34,10 @@ router.post(
 );
 //lista de universidades
 router.get("/universidades", universidades);
-
+//añadir una cita a la agenda
+router.post("/agenda", agenda);
 module.exports = router;
+//listado de citas disponibles
+router.get("/agenda", agendaDisponible);
+//Listado de citas de un medico
+router.post("/agendaMedico", agendaMedico);

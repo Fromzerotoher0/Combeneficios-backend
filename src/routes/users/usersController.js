@@ -1,73 +1,102 @@
 const connection = require("../../database/db");
+const {
+  postCita,
+  getMunicipios,
+  getDepartamentos,
+  getBeneficiarios,
+  updateUser,
+  getUserById,
+} = require("./ops");
 
-//obtener usuario por su id
-exports.getUser = async (req, res) => {
-  const id = req.body.id;
-  connection.query(
-    "SELECT * FROM users WHERE id = ?",
-    [id],
-    (error, results) => {
+module.exports = {
+  //obtener usuario por su id
+  async getUserController(req, res, next) {
+    try {
+      const id = req.body.id;
+      const result = await getUserById(id);
       res.status(200).json({
-        results,
+        error: false,
+        result,
       });
+    } catch (error) {
+      next(error);
     }
-  );
-};
+  },
 
-//actualizar datos de un usuario
-exports.updateUser = async (req, res) => {
-  const id = req.body.id;
-  const nombres = req.body.nombres;
-  const apellidos = req.body.apellidos;
-  const telefono = req.body.telefono;
-  const email = req.body.email;
-  connection.query(
-    `UPDATE users SET nombres='${nombres}' , apellidos='${apellidos}',telefono='${telefono}',email='${email}'
-    WHERE id=?`,
-    [id],
-    (error, results) => {
+  //actualizar datos de un usuario
+  async updateUserController(req, res, next) {
+    try {
+      const id = req.body.id;
+      const nombres = req.body.nombres;
+      const apellidos = req.body.apellidos;
+      const telefono = req.body.telefono;
+      const email = req.body.email;
+
+      const result = await updateUser(id, nombres, apellidos, telefono, email);
       res.status(200).json({
-        msg: "actualizado",
+        error: false,
+        msg: "datos actualizados",
+        result,
       });
+    } catch (error) {
+      next(error);
     }
-  );
-};
-//Metodo para cargar los beneficiarios afiliados a un usuario
-exports.loadBeneficiaries = async (req, res) => {
-  const id = req.body.id;
-  connection.query(
-    `SELECT * FROM users WHERE titular_id = ?`,
-    [id],
-    (error, results) => {
+  },
+
+  //Metodo para cargar los beneficiarios afiliados a un usuario
+  async getBeneficiariesController(req, res, next) {
+    try {
+      const id = req.body.id;
+      const result = await getBeneficiarios(id);
       res.status(200).json({
-        results,
+        error: false,
+        result,
       });
+    } catch (error) {
+      next(error);
     }
-  );
-};
-//obtener listado de departamentos
-exports.departamentos = async (req, res) => {
-  connection.query(
-    "SELECT * from departamentos",
-    function (error, results, fields) {
-      if (error) throw error;
+  },
+  //obtener listado de departamentos
+  async getDepartamentosController(req, res, next) {
+    try {
+      const result = await getDepartamentos();
       res.status(200).json({
-        results,
+        error: false,
+        result,
       });
+    } catch (error) {
+      next(error);
     }
-  );
-};
-//obtener listado de ciudades
-exports.ciudades = async (req, res) => {
-  const departamento = req.body.departamento;
-  connection.query(
-    "SELECT * FROM municipios WHERE departamento_id = ?",
-    [departamento],
-    function (error, results, fields) {
-      if (error) throw error;
+  },
+  //obtener listado de ciudades
+  async getCiudadesController(req, res, next) {
+    try {
+      const departamento = req.body.departamento;
+      const result = await getMunicipios(departamento);
       res.status(200).json({
-        results,
+        error: false,
+        result,
       });
+    } catch (error) {
+      next(error);
     }
-  );
+  },
+
+  //agendar una cita
+  async citaController(req, res, next) {
+    const beneficiario = req.body.id;
+    const agenda_id = req.body.agenda_id;
+    try {
+      const beneficiario = req.body.id;
+      const agenda_id = req.body.agenda_id;
+      const result = await postCita(beneficiario, agenda_id);
+      res.status(200).json({
+        error: false,
+        msg: "cita agendada",
+        result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
 };

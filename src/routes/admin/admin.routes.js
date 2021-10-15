@@ -5,6 +5,7 @@ const {
   solicitudes,
   solicitudesEstudio,
   aceptarEstudio,
+  rechazarEstudio,
 } = require("./adminController");
 const { adminRole } = require("../../middlewares/jwtValidator");
 const upload = require("../../middlewares/storage");
@@ -20,5 +21,7 @@ router.post("/aprobar", adminRole, aceptar);
 router.get("/solicitudEstudio", adminRole, solicitudesEstudio);
 //aceptar solicitud de especializacion
 router.post("/aceptarEstudio", adminRole, aceptarEstudio);
+//rechazar solicitud de especializacion
+router.post("/rechazarEstudio", adminRole, rechazarEstudio);
 
 module.exports = router;
