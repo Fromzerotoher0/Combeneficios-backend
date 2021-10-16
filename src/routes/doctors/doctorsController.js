@@ -1,7 +1,19 @@
-const connection = require("../../database/db");
+const {
+  register,
+  getMedicos,
+  getMedicoById,
+  getMedicosPregrade,
+  getMedicosEspecialization,
+  getEspecializations,
+  getAgendaMedico,
+  getAgenda,
+  agenda,
+  getUniversidades,
+  solicitudEstudio,
+} = require("./ops");
 
 //registrar un medico
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
   try {
     //parametros obtenidos del body de la peticion
     const asunto = req.body.asunto;
@@ -9,164 +21,68 @@ exports.register = async (req, res) => {
     const direccion = req.body.direccion;
     const users_id = req.body.id;
 
-    let nombres = "";
-    let apellidos = "";
-    let documento = "";
-    let correo = "";
-
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
     let fecha = hora + ":" + minuto + ":" + segundo;
     let date = new Date().toISOString().split("T")[0];
-    fechaYHora = date + " " + fecha;
-
-    connection.query(
-      "select * from medico where users_id = ?",
-      [users_id],
-      async (error, results) => {
-        if (results.length > 0) {
-          res.status(400).json({
-            error: "true",
-            msg: "un medico no puede hacer este tipo de solicitud",
-          });
-        } else {
-          connection.query(
-            "SELECT * FROM solicitud where users_id = ? and estado ='proceso'",
-            [users_id],
-            async (error, results) => {
-              if (results.length > 0) {
-                res.status(400).json({
-                  error: "true",
-                  msg: "solo puede tener una solicitud en proceso",
-                });
-              } else {
-                connection.query(
-                  "SELECT * FROM users where id = ?",
-                  [users_id],
-                  async (error, results) => {
-                    nombres = results[0].nombres;
-                    apellidos = results[0].apellidos;
-                    documento = results[0].nro_documento;
-                    correo = results[0].email;
-                    if (results.length > 0) {
-                      connection.query(
-                        //insertar solicitud en la base de datos
-                        "INSERT INTO solicitud SET ?",
-                        {
-                          nombres: nombres,
-                          apellidos: apellidos,
-                          documento: documento,
-                          asunto: asunto,
-                          modalidad: modalidad,
-                          direccion: direccion,
-                          users_id: users_id,
-                          especializaciones_id: 1,
-                          correo: correo,
-                          created_at: fechaYHora,
-                          updated_at: fechaYHora,
-                          estado: "proceso",
-                        },
-                        (error, results) => {
-                          if (error) {
-                            res.status(400).json({
-                              error: "true",
-                              msg: error.message,
-                            });
-                          } else {
-                            res.status(200).json({
-                              error: "false",
-                              msg: "solicitud creada",
-                            });
-                          }
-                        }
-                      );
-                    }
-                  }
-                );
-              }
-            }
-          );
-        }
-      }
+    let fechaYHora = date + " " + fecha;
+    const result = await register(
+      asunto,
+      modalidad,
+      direccion,
+      users_id,
+      fechaYHora
     );
+    res.status(200).json({
+      error: false,
+      msg: result,
+    });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 //obtener listado de medicos
 
 exports.medicos = async (req, res) => {
-  connection.query(
-    "SELECT  medico.id , medico.imgUrl , medico.nombres , medico.apellidos , descripcion from medico inner join especializaciones e on e.id=medico.especializaciones_id",
-    function (error, results, fields) {
-      console.log(results);
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  const result = await getMedicos();
+  res.json({
+    result,
+  });
 };
 //obtener un medico por su id
 exports.medicosById = async (req, res) => {
   const id = req.body.id;
-  connection.query(
-    "SELECT * from medico inner join especializaciones e on e.id=medico.especializaciones_id where medico.id = ?",
-    [id],
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  const result = await getMedicoById(id);
+  res.json({
+    result,
+  });
 };
 //obtener los estudios de un medico
 exports.medicosPregrade = async (req, res) => {
   const id = req.body.id;
-  connection.query(
-    "SELECT * from estudios where medico_id = ? and tipo_estudio = 1",
-    [id],
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  const result = await getMedicosPregrade(id);
+  res.json({
+    result,
+  });
 };
 //obtener las especializaciones de un medico
 exports.medicosEspecialization = async (req, res) => {
   const id = req.body.id;
-  connection.query(
-    "SELECT * from estudios where medico_id = ? and tipo_estudio = 2",
-    [id],
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  const result = await getMedicosEspecialization(id);
+  res.json({
+    result,
+  });
 };
 //obtener todas las especializaciones disponibles
 exports.especializaciones = async (req, res) => {
-  connection.query(
-    "SELECT * from especializaciones",
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  const result = await getEspecializations();
+  res.json({
+    result,
+  });
 };
 //solicitud para añadir especializacion
 exports.solicitudEstudio = async (req, res) => {
-  let nombres = "";
-  let apellidos = "";
-  let documentos = "";
   const universidad = req.body.universidad;
   const medico_id = req.body.medico_id;
   const fecha_obtencion = req.body.fecha_obtencion;
@@ -179,49 +95,21 @@ exports.solicitudEstudio = async (req, res) => {
   let date = new Date().toISOString().split("T")[0];
   let fechaYHora = date + " " + fecha;
 
-  connection.query(
-    "SELECT medico.id , medico.nombres , medico.apellidos,medico.documento FROM medico INNER JOIN users ON medico.users_id = ?",
-    [medico_id],
-    async (error, results) => {
-      id = results[0].id;
-      nombres = results[0].nombres;
-      apellidos = results[0].apellidos;
-      documento = results[0].documento;
-      console.log(id);
-      connection.query(
-        "INSERT INTO solicitud_estudio set ?",
-        {
-          users_id: medico_id,
-          nombres: nombres,
-          apellidos: apellidos,
-          documento: documento,
-          medico_id: id,
-          especializaciones_id: especializaciones_id,
-          imgUrl: imgUrl,
-          universidad: universidad,
-          fecha_obtencion: fecha_obtencion,
-          created_at: fechaYHora,
-          updated_at: fechaYHora,
-          estado: "proceso",
-        },
-        (error, results) => {
-          console.log("solicitud enviada");
-        }
-      );
-    }
+  const result = await solicitudEstudio(
+    universidad,
+    medico_id,
+    fecha_obtencion,
+    especializaciones_id,
+    imgUrl,
+    fechaYHora
   );
 };
 //lista de universidades
 exports.universidades = async (req, res) => {
-  connection.query(
-    "SELECT * from universidades",
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  const result = await getUniversidades();
+  res.json({
+    result,
+  });
 };
 //añadir cita a agenda
 exports.agenda = async (req, res) => {
@@ -236,58 +124,30 @@ exports.agenda = async (req, res) => {
   let fecha = hora + ":" + minuto + ":" + segundo;
   let date = new Date().toISOString().split("T")[0];
   let fechaYHora = date + " " + fecha;
-
-  connection.query(
-    "insert into agenda set ?",
-    {
-      fecha: fecha_cita,
-      hora: hora_cita,
-      especialidad: especialidad,
-      medico_id: medico_id,
-      tarifa: tarifa,
-      created_at: fechaYHora,
-      updated_at: fechaYHora,
-      estado: "activo",
-    },
-    (error, results) => {
-      if (error == null) {
-        res.status(200).json({
-          error: "false",
-          msg: "agenda añadida",
-        });
-      } else {
-        res.status(400).json({
-          error: "true",
-          msg: error.message,
-        });
-      }
-    }
+  const result = await agenda(
+    fecha_cita,
+    hora_cita,
+    medico_id,
+    tarifa,
+    especialidad,
+    fechaYHora
   );
+  res.json({
+    result,
+  });
 };
 //listado de citas disponibles
 exports.agendaDisponible = async (req, res) => {
-  connection.query(
-    "SELECT * from agenda where estado = 'activo'",
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  const result = await getAgenda();
+  res.json({
+    result,
+  });
 };
 //listado de citas disponibles de un medico
 exports.agendaMedico = async (req, res) => {
   const medico_id = req.body.medico_id;
-  console.log(medico_id);
-  connection.query(
-    "SELECT * from agenda where medico_id = ?",
-    [medico_id],
-    function (error, results, fields) {
-      if (error) throw error;
-      res.status(200).json({
-        results,
-      });
-    }
-  );
+  const result = await getAgendaMedico(medico_id);
+  res.json({
+    result,
+  });
 };
