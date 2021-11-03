@@ -12,7 +12,8 @@ const {
   solicitudEstudio,
   getMedicosStudies,
   agendarCita,
-  getCitas,
+  getCitasUser,
+  getCitasMedico,
 } = require("./ops");
 
 //registrar un medico
@@ -189,10 +190,19 @@ exports.agendarCita = async (req, res) => {
   });
 };
 
-//listado de citas disponibles de un medico
-exports.getCitas = async (req, res) => {
+//listado de citas agendadas de un medico
+exports.getCitasMedico = async (req, res) => {
   const user = req.body.medico_id;
-  const result = await getCitas(user);
+  const result = await getCitasMedico(user);
+  res.json({
+    result,
+  });
+};
+
+//listado de citas agendadas de un usuarui
+exports.getCitasUser = async (req, res) => {
+  const user = req.body.id;
+  const result = await getCitasUser(user);
   res.json({
     result,
   });

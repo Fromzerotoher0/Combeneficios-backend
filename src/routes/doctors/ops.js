@@ -374,7 +374,7 @@ module.exports = {
   },
 
   //obtener la agenda de citas de un medico
-  getCitas(user) {
+  getCitasMedico(user) {
     return new Promise(async (resolve, reject) => {
       connection.query(
         "select * from medico where users_id = ?",
@@ -383,14 +383,41 @@ module.exports = {
           connection.query(
             "SELECT * from cita where medico_id = ? and estado = 'activo'",
             [result[0].id],
-            function (error, results) {
+            function (error, result) {
               if (error == null) {
-                resolve(results);
+                connection.query(
+                  "SELECT * from agenda where medico_id = ? and estado = 'agendada'",
+                  [result[0].medico_id],
+                  function (error, results) {
+                    if (error == null) {
+                      resolve(results);
+                    } else {
+                      reject(error);
+                    }
+                  }
+                );
               } else {
                 reject(error);
               }
             }
           );
+        }
+      );
+    });
+  },
+
+  //obtener las citas de un usuario
+  getCitasUser(user) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "select * from agenda a inner join cita c on a.id = c.agenda_id where c.beneficiario_id = ? and a.estado = 'agendada'",
+        [user],
+        function (error, results) {
+          if (error == null) {
+            resolve(results);
+          } else {
+            reject(error);
+          }
         }
       );
     });

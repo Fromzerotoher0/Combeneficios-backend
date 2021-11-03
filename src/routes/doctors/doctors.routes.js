@@ -14,7 +14,8 @@ const {
   agendaMedico,
   medicosstudies,
   agendarCita,
-  getCitas,
+  getCitasMedico,
+  getCitasUser,
 } = require("./doctorsController");
 const router = Router();
 
@@ -49,4 +50,6 @@ router.post("/agendaMedico", agendaMedico);
 //agendar cita
 router.post("/agendaCita", agendarCita);
 //agenda de citas de un medicos getCitas
-router.post("/citas", getCitas);
+router.post("/citas", getCitasMedico);
+//agenda de citas de un medicos getCitas
+router.post("/citasUsuario", getCitasUser);
