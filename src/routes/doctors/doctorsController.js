@@ -10,6 +10,9 @@ const {
   agenda,
   getUniversidades,
   solicitudEstudio,
+  getMedicosStudies,
+  agendarCita,
+  getCitas,
 } = require("./ops");
 
 //registrar un medico
@@ -20,6 +23,7 @@ exports.register = async (req, res, next) => {
     const modalidad = req.body.modalidad;
     const direccion = req.body.direccion;
     const users_id = req.body.id;
+    const universidad = req.body.universidad;
 
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
@@ -32,7 +36,8 @@ exports.register = async (req, res, next) => {
       modalidad,
       direccion,
       users_id,
-      fechaYHora
+      fechaYHora,
+      universidad
     );
     res.status(200).json({
       error: false,
@@ -59,6 +64,16 @@ exports.medicosById = async (req, res) => {
   });
 };
 //obtener los estudios de un medico
+exports.medicosstudies = async (req, res) => {
+  const id = req.body.id;
+  console.log(id);
+  const result = await getMedicosStudies(id);
+  res.json({
+    result,
+  });
+};
+
+//obtener los estudios de pregrado de un medico
 exports.medicosPregrade = async (req, res) => {
   const id = req.body.id;
   const result = await getMedicosPregrade(id);
@@ -82,27 +97,31 @@ exports.especializaciones = async (req, res) => {
   });
 };
 //solicitud para añadir especializacion
-exports.solicitudEstudio = async (req, res) => {
-  const universidad = req.body.universidad;
-  const medico_id = req.body.medico_id;
-  const fecha_obtencion = req.body.fecha_obtencion;
-  const especializaciones_id = req.body.especializaciones_id;
-  const imgUrl = `http://localhost:7000/public/${req.file.filename}`;
-  let hora = new Date().getHours();
-  let minuto = new Date().getMinutes();
-  let segundo = new Date().getSeconds();
-  let fecha = hora + ":" + minuto + ":" + segundo;
-  let date = new Date().toISOString().split("T")[0];
-  let fechaYHora = date + " " + fecha;
+exports.solicitudEstudio = async (req, res, next) => {
+  try {
+    const universidad = req.body.universidad;
+    const medico_id = req.body.medico_id;
+    const fecha_obtencion = req.body.fecha_obtencion;
+    const especializaciones_id = req.body.especializaciones_id;
+    const imgUrl = `http://localhost:7000/public/${req.file.filename}`;
+    let hora = new Date().getHours();
+    let minuto = new Date().getMinutes();
+    let segundo = new Date().getSeconds();
+    let fecha = hora + ":" + minuto + ":" + segundo;
+    let date = new Date().toISOString().split("T")[0];
+    let fechaYHora = date + " " + fecha;
 
-  const result = await solicitudEstudio(
-    universidad,
-    medico_id,
-    fecha_obtencion,
-    especializaciones_id,
-    imgUrl,
-    fechaYHora
-  );
+    const result = await solicitudEstudio(
+      universidad,
+      medico_id,
+      fecha_obtencion,
+      especializaciones_id,
+      imgUrl,
+      fechaYHora
+    );
+  } catch (error) {
+    next(error);
+  }
 };
 //lista de universidades
 exports.universidades = async (req, res) => {
@@ -147,6 +166,33 @@ exports.agendaDisponible = async (req, res) => {
 exports.agendaMedico = async (req, res) => {
   const medico_id = req.body.medico_id;
   const result = await getAgendaMedico(medico_id);
+  res.json({
+    result,
+  });
+};
+
+//agendar cita a un beneficiario
+exports.agendarCita = async (req, res) => {
+  const beneficiario = req.body.beneficiario_id;
+  const agenda = req.body.agenda_id;
+  const medico_id = req.body.medico_id;
+  let hora = new Date().getHours();
+  let minuto = new Date().getMinutes();
+  let segundo = new Date().getSeconds();
+  let fecha = hora + ":" + minuto + ":" + segundo;
+  let date = new Date().toISOString().split("T")[0];
+  let fechaYHora = date + " " + fecha;
+  console.log(`beneficiario ${beneficiario} - agenda ${agenda}`);
+  const result = await agendarCita(agenda, beneficiario, fechaYHora, medico_id);
+  res.json({
+    result,
+  });
+};
+
+//listado de citas disponibles de un medico
+exports.getCitas = async (req, res) => {
+  const user = req.body.medico_id;
+  const result = await getCitas(user);
   res.json({
     result,
   });

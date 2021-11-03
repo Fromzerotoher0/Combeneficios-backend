@@ -10,7 +10,7 @@ exports.emailCorrecto = (req, res) => {
     secure: true,
     auth: {
       user: "ander.er985@gmail.com",
-      pass: "yfwlkdblonawxuap",
+      pass: "lnrfltbcxzswgyxa",
     },
     tls: {
       rejectUnauthorized: false,
@@ -32,6 +32,7 @@ exports.emailCorrecto = (req, res) => {
 
   transporter.sendMail(MailOptions, (error, info) => {
     if (error) {
+      console.log(error.message);
       res.status(500).send(error.message);
     } else {
       console.log("email enviado");

@@ -17,8 +17,17 @@ module.exports = {
     });
   },
 
-  aprobarSolicitud(id, modalidad, especializacion, direccion, to, fechaYHora) {
+  aprobarSolicitud(
+    id,
+    modalidad,
+    especializacion,
+    direccion,
+    to,
+    fechaYHora,
+    universidad
+  ) {
     return new Promise(async (resolve, reject) => {
+      console.log(universidad);
       let medico_id = 1;
       let nombres = "";
       let apellidos = "";
@@ -89,6 +98,7 @@ module.exports = {
                           medico_id: 1,
                           titulo: "medicina",
                           tipo_estudio: 1,
+                          universidad: universidad,
                           created_at: fechaYHora,
                           updated_at: fechaYHora,
                         },
@@ -110,6 +120,7 @@ module.exports = {
                           medico_id: medico_id,
                           titulo: "medicina",
                           tipo_estudio: 1,
+                          universidad: universidad,
                           fecha_obtencion: fechaYHora,
                           created_at: fechaYHora,
                           updated_at: fechaYHora,
@@ -144,7 +155,7 @@ module.exports = {
               secure: true,
               auth: {
                 user: "ander.er985@gmail.com",
-                pass: "yfwlkdblonawxuap",
+                pass: "lnrfltbcxzswgyxa",
               },
               tls: {
                 rejectUnauthorized: false,
@@ -156,7 +167,7 @@ module.exports = {
               subject: "solicitud aprobada",
 
               html: `
-                          <p style='font-size:20px'>felicidades su solicitud de especializacion ha sido <strong>Aprobada</strong></p>
+                          <p style='font-size:20px'>felicidades su solicitud  ha sido <strong>Aprobada</strong></p>
   
                           `,
             };
@@ -190,7 +201,7 @@ module.exports = {
         secure: true,
         auth: {
           user: "ander.er985@gmail.com",
-          pass: "yfwlkdblonawxuap",
+          pass: "lnrfltbcxzswgyxa",
         },
         tls: {
           rejectUnauthorized: false,
@@ -238,7 +249,8 @@ module.exports = {
     tipo_estudio,
     medico_id,
     fecha_obtencion,
-    fechaYHora
+    fechaYHora,
+    especializacion
   ) {
     return new Promise(async (resolve, reject) => {
       let to = "";
@@ -264,9 +276,17 @@ module.exports = {
                 connection.query(
                   `UPDATE solicitud_estudio SET estado='aprobada'
                         WHERE medico_id=?`,
-                  [medico_id],
+                  [medico_id]
+                );
+
+                connection.query(
+                  `UPDATE medico SET especializaciones_id=${especializacion} WHERE id=${medico_id}`,
                   (error, results) => {
-                    resolve(results);
+                    if (error == null) {
+                      resolve(results);
+                    } else {
+                      reject(error);
+                    }
                   }
                 );
 
@@ -276,7 +296,7 @@ module.exports = {
                   secure: true,
                   auth: {
                     user: "ander.er985@gmail.com",
-                    pass: "yfwlkdblonawxuap",
+                    pass: "lnrfltbcxzswgyxa",
                   },
                   tls: {
                     rejectUnauthorized: false,
@@ -331,7 +351,7 @@ module.exports = {
             secure: true,
             auth: {
               user: "ander.er985@gmail.com",
-              pass: "yfwlkdblonawxuap",
+              pass: "lnrfltbcxzswgyxa",
             },
             tls: {
               rejectUnauthorized: false,

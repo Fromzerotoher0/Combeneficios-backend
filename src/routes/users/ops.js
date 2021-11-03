@@ -23,9 +23,9 @@ module.exports = {
         "select * from users where id = ?",
         [id],
         (error, results) => {
-          if (results.lenght > 0) {
+          if (results.length > 0) {
             connection.query(
-              `UPDATE users SET nombres='${nombres}' , apellidos='${apellidos}',telefono='${telefono}',email='${email}',updated_at=${fechaYHora}
+              `UPDATE users SET nombres='${nombres}' , apellidos='${apellidos}',telefono='${telefono}',email='${email}',updated_at='${fechaYHora}'
                 WHERE id=?`,
               [id],
               (error, results) => {

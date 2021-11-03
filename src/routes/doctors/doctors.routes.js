@@ -12,6 +12,9 @@ const {
   agenda,
   agendaDisponible,
   agendaMedico,
+  medicosstudies,
+  agendarCita,
+  getCitas,
 } = require("./doctorsController");
 const router = Router();
 
@@ -20,6 +23,8 @@ router.post("/solicitud", register);
 router.get("/medicos", medicos);
 //obtener los datos de un medico por su id
 router.post("/medico", medicosById);
+//obtener pregrado de un medico
+router.post("/medico/especializaciones", medicosstudies);
 //obtener pregrado de un medico
 router.post("/medico/estudios", medicosPregrade);
 //obtener especializaciones de un medico
@@ -41,3 +46,7 @@ module.exports = router;
 router.get("/agenda", agendaDisponible);
 //Listado de citas de un medico
 router.post("/agendaMedico", agendaMedico);
+//agendar cita
+router.post("/agendaCita", agendarCita);
+//agenda de citas de un medicos getCitas
+router.post("/citas", getCitas);

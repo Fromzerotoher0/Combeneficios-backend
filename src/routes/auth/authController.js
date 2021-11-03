@@ -13,10 +13,25 @@ exports.register = async (req, res, next) => {
     const contrasena = req.body.contrasena;
     const telefono = req.body.telefono;
     const sexo = req.body.sexo;
-    const fecha_nac = req.body.fecha_nacimiento;
+    let fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
     const imgUrl = `http://localhost:7000/public/${req.file.filename}`;
+
+    function formatDate(date) {
+      var d = new Date(date),
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
+
+      return [year, month, day].join("-");
+    }
+
+    fecha_nac = formatDate(fecha_nac);
+
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();

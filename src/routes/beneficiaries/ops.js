@@ -21,7 +21,9 @@ module.exports = {
   ) {
     return new Promise(async (resolve, reject) => {
       let departamento_string = "";
-
+      fecha_nac = Date.parse(fecha_nac);
+      fecha = new Date(fecha_nac);
+      console.log(fecha.toISOString().substring(0, 10));
       //metodo para encriptar la contraseña
       const salt = await bcrypt.genSalt(8);
       let passHash = await bcrypt.hash(contrasena, salt);
@@ -75,7 +77,7 @@ module.exports = {
                         apellidos: apellidos,
                         sexo: sexo,
                         email: correo,
-                        fecha_nacimiento: fecha_nac,
+                        fecha_nacimiento: fecha,
                         departamento: departamento_string,
                         ciudad: ciudad,
                         contrasena: passHash,

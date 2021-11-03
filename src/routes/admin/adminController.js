@@ -22,6 +22,7 @@ exports.aceptar = async (req, res, next) => {
     const especializacion = req.body.especializaciones_id;
     const direccion = req.body.direccion;
     const to = req.body.correo;
+    const universidad = req.body.universidad;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
@@ -35,7 +36,8 @@ exports.aceptar = async (req, res, next) => {
       especializacion,
       direccion,
       to,
-      fechaYHora
+      fechaYHora,
+      universidad
     );
     res.status(200).json({
       error: false,
@@ -68,6 +70,7 @@ exports.aceptarEstudio = async (req, res, next) => {
   const tipo_estudio = 2;
   const medico_id = req.body.medico_id;
   const fecha_obtencion = req.body.fecha_obtencion;
+  const especializacion = req.body.especializacion;
   let hora = new Date().getHours();
   let minuto = new Date().getMinutes();
   let segundo = new Date().getSeconds();
@@ -82,7 +85,8 @@ exports.aceptarEstudio = async (req, res, next) => {
     tipo_estudio,
     medico_id,
     fecha_obtencion,
-    fechaYHora
+    fechaYHora,
+    especializacion
   );
   res.status(200).json({
     error: false,

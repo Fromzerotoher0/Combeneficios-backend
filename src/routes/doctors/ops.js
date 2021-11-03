@@ -1,7 +1,7 @@
 const connection = require("../../database/db");
 
 module.exports = {
-  register(asunto, modalidad, direccion, users_id, fechaYHora) {
+  register(asunto, modalidad, direccion, users_id, fechaYHora, universidad) {
     return new Promise(async (resolve, reject) => {
       let nombres = "";
       let apellidos = "";
@@ -46,6 +46,7 @@ module.exports = {
                             modalidad: modalidad,
                             direccion: direccion,
                             users_id: users_id,
+                            universidad: universidad,
                             especializaciones_id: 1,
                             correo: correo,
                             created_at: fechaYHora,
@@ -101,6 +102,28 @@ module.exports = {
           } else {
             reject(error);
           }
+        }
+      );
+    });
+  },
+
+  getMedicosStudies(id) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "select * from medico where users_id = ?",
+        [id],
+        function (error, results) {
+          connection.query(
+            "SELECT * from estudios where medico_id = ?",
+            [results[0].id],
+            function (error, results, fields) {
+              if (error == null) {
+                resolve(results);
+              } else {
+                reject(error);
+              }
+            }
+          );
         }
       );
     });
@@ -167,38 +190,53 @@ module.exports = {
     let documentos = "";
     return new Promise(async (resolve, reject) => {
       connection.query(
-        "SELECT medico.id , medico.nombres , medico.apellidos,medico.documento FROM medico INNER JOIN users ON medico.users_id = ?",
+        "select * from solicitud_estudio where medico_id = ?",
         [medico_id],
         async (error, results) => {
-          id = results[0].id;
-          nombres = results[0].nombres;
-          apellidos = results[0].apellidos;
-          documento = results[0].documento;
-          console.log(id);
-          connection.query(
-            "INSERT INTO solicitud_estudio set ?",
-            {
-              users_id: medico_id,
-              nombres: nombres,
-              apellidos: apellidos,
-              documento: documento,
-              medico_id: id,
-              especializaciones_id: especializaciones_id,
-              imgUrl: imgUrl,
-              universidad: universidad,
-              fecha_obtencion: fecha_obtencion,
-              created_at: fechaYHora,
-              updated_at: fechaYHora,
-              estado: "proceso",
-            },
-            (error, results) => {
-              if (error == null) {
-                resolve("solicitud enviada");
-              } else {
-                reject(error);
+          if (results.length < 0) {
+            connection.query(
+              "SELECT medico.id , medico.nombres , medico.apellidos,medico.documento FROM medico INNER JOIN users ON medico.users_id = ?",
+              [medico_id],
+              async (error, results) => {
+                console.log(results.length, "a");
+                id = results[0].id;
+                nombres = results[0].nombres;
+                apellidos = results[0].apellidos;
+                documento = results[0].documento;
+                console.log(id);
+                connection.query(
+                  "INSERT INTO solicitud_estudio set ?",
+                  {
+                    users_id: medico_id,
+                    nombres: nombres,
+                    apellidos: apellidos,
+                    documento: documento,
+                    medico_id: id,
+                    especializaciones_id: especializaciones_id,
+                    imgUrl: imgUrl,
+                    universidad: universidad,
+                    fecha_obtencion: fecha_obtencion,
+                    created_at: fechaYHora,
+                    updated_at: fechaYHora,
+                    estado: "proceso",
+                  },
+                  (error, results) => {
+                    if (error == null) {
+                      resolve("solicitud enviada");
+                    } else {
+                      reject(error);
+                    }
+                  }
+                );
               }
-            }
-          );
+            );
+          } else {
+            reject(
+              new Error(
+                "solo se puede hacer una solicitud de especializacion a la vez"
+              )
+            );
+          }
         }
       );
     });
@@ -222,22 +260,54 @@ module.exports = {
   agenda(fecha_cita, hora_cita, medico_id, tarifa, especialidad, fechaYHora) {
     return new Promise(async (resolve, reject) => {
       connection.query(
-        "insert into agenda set ?",
-        {
-          fecha: fecha_cita,
-          hora: hora_cita,
-          especialidad: especialidad,
-          medico_id: medico_id,
-          tarifa: tarifa,
-          created_at: fechaYHora,
-          updated_at: fechaYHora,
-          estado: "activo",
-        },
-        (error, results) => {
-          if (error == null) {
-            resolve("agregado a la agenda");
+        "SELECT medico.id FROM medico where medico.users_id = ? ",
+        [medico_id],
+        (error, result) => {
+          if (especialidad === "medicina") {
+            especialidad = "medicina general";
+            medico_id = result[0].id;
+            connection.query(
+              "insert into agenda set ?",
+              {
+                fecha: fecha_cita,
+                hora: hora_cita,
+                especialidad: especialidad,
+                medico_id: medico_id,
+                tarifa: tarifa,
+                created_at: fechaYHora,
+                updated_at: fechaYHora,
+                estado: "activo",
+              },
+              (error, results) => {
+                if (error == null) {
+                  resolve("agregado a la agenda");
+                } else {
+                  reject(error);
+                }
+              }
+            );
           } else {
-            reject(error);
+            medico_id = result[0].id;
+            connection.query(
+              "insert into agenda set ?",
+              {
+                fecha: fecha_cita,
+                hora: hora_cita,
+                especialidad: especialidad,
+                medico_id: medico_id,
+                tarifa: tarifa,
+                created_at: fechaYHora,
+                updated_at: fechaYHora,
+                estado: "activo",
+              },
+              (error, results) => {
+                if (error == null) {
+                  resolve("agregado a la agenda");
+                } else {
+                  reject(error);
+                }
+              }
+            );
           }
         }
       );
@@ -262,7 +332,7 @@ module.exports = {
   getAgendaMedico(medico_id) {
     return new Promise(async (resolve, reject) => {
       connection.query(
-        "SELECT * from agenda where medico_id = ?",
+        "SELECT * from agenda where medico_id = ? and estado = 'activo'",
         [medico_id],
         function (error, results) {
           if (error == null) {
@@ -270,6 +340,57 @@ module.exports = {
           } else {
             reject(error);
           }
+        }
+      );
+    });
+  },
+  agendarCita(agenda, beneficiario, fecha, medico_id) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "insert into cita set ?",
+        {
+          agenda_id: agenda,
+          beneficiario_id: beneficiario,
+          medico_id: medico_id,
+          created_at: fecha,
+          updated_at: fecha,
+          estado: "activo",
+        },
+        async (error, result) => {
+          if (error == null) {
+            connection.query(
+              "UPDATE agenda SET estado = 'agendada' WHERE id = ?",
+              [agenda],
+              async (error, result) => {
+                resolve("cita agendada");
+              }
+            );
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
+  //obtener la agenda de citas de un medico
+  getCitas(user) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "select * from medico where users_id = ?",
+        [user],
+        async (error, result) => {
+          connection.query(
+            "SELECT * from cita where medico_id = ? and estado = 'activo'",
+            [result[0].id],
+            function (error, results) {
+              if (error == null) {
+                resolve(results);
+              } else {
+                reject(error);
+              }
+            }
+          );
         }
       );
     });

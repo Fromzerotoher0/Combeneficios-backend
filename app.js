@@ -5,9 +5,13 @@ const cors = require("cors");
 const path = require("path");
 const router = require("./src/routes/routes");
 const appError = require("./src/helpers/appError");
+const morgan = require("morgan");
 const { errorHandler } = require("./src/middlewares/errorHandler");
 
 const app = express();
+
+//morgan
+app.use(morgan("dev"));
 
 //motor de plantillas
 app.use(cors());
