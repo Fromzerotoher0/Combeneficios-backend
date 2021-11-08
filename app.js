@@ -1,13 +1,13 @@
 const express = require("express");
-const dotEnv = require("dotenv");
+require("dotenv").config({ path: "./src/env/.env" });
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const path = require("path");
+const fs = require("fs");
 const router = require("./src/routes/routes");
 const appError = require("./src/helpers/appError");
 const morgan = require("morgan");
+const https = require("https");
 const { errorHandler } = require("./src/middlewares/errorHandler");
-
 const app = express();
 
 //morgan
@@ -25,9 +25,6 @@ app.use("/public", express.static(`${__dirname}/storage`));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//variables de entorno
-dotEnv.config({ path: "./src/env/.env" });
-
 //uso de cookies
 app.use(cookieParser());
 
@@ -44,6 +41,14 @@ app.all("*", (req, res, next) => {
 
 app.use(errorHandler);
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Server Up running in http://localhost:${process.env.PORT}`);
-});
+https
+  .createServer(
+    {
+      cert: fs.readFileSync("certificado.crt"),
+      key: fs.readFileSync("key.pem"),
+    },
+    app
+  )
+  .listen(process.env.PORT || 3000, () => {
+    console.log(`Server Up running in http://localhost:${process.env.PORT}`);
+  });

@@ -24,7 +24,9 @@ module.exports = {
     direccion,
     to,
     fechaYHora,
-    universidad
+    universidad,
+    departamento,
+    ciudad
   ) {
     return new Promise(async (resolve, reject) => {
       console.log(universidad);
@@ -62,6 +64,8 @@ module.exports = {
                     direccion: direccion,
                     modalidad_cita: modalidad,
                     imgUrl: imgUrl,
+                    departamento: departamento,
+                    ciudad: ciudad,
                     especializaciones_id: especializacion,
                     created_at: fechaYHora,
                     updated_at: fechaYHora,

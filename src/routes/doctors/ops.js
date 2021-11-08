@@ -1,12 +1,23 @@
 const connection = require("../../database/db");
+const nodemailer = require("nodemailer");
 
 module.exports = {
-  register(asunto, modalidad, direccion, users_id, fechaYHora, universidad) {
+  register(
+    asunto,
+    modalidad,
+    direccion,
+    users_id,
+    fechaYHora,
+    universidad,
+    departamento,
+    ciudad
+  ) {
     return new Promise(async (resolve, reject) => {
       let nombres = "";
       let apellidos = "";
       let documento = "";
       let correo = "";
+      let departamento_string = "";
 
       connection.query(
         "select * from medico where users_id = ?",
@@ -17,6 +28,14 @@ module.exports = {
               new Error("un medico no puede hacer este tipo de solicitud")
             );
           } else {
+            connection.query(
+              //consulta para obtener el nombre del departamento por medio de su id
+              "SELECT departamento from departamentos d where id_departamento = ?",
+              [departamento],
+              async (error, results) => {
+                departamento_string = results[0].departamento;
+              }
+            );
             connection.query(
               "SELECT * FROM solicitud where users_id = ? and estado ='proceso'",
               [users_id],
@@ -47,6 +66,8 @@ module.exports = {
                             direccion: direccion,
                             users_id: users_id,
                             universidad: universidad,
+                            departamento: departamento_string,
+                            ciudad: ciudad,
                             especializaciones_id: 1,
                             correo: correo,
                             created_at: fechaYHora,
@@ -78,7 +99,7 @@ module.exports = {
   getMedicos() {
     return new Promise(async (resolve, result) => {
       connection.query(
-        "SELECT  medico.id , medico.imgUrl , medico.nombres , medico.apellidos , descripcion from medico inner join especializaciones e on e.id=medico.especializaciones_id",
+        "SELECT  medico.id , medico.imgUrl , medico.nombres , medico.apellidos , ciudad ,descripcion from medico inner join especializaciones e on e.id=medico.especializaciones_id",
         function (error, results, fields) {
           console.log(results);
           if (error == null) {
@@ -96,6 +117,22 @@ module.exports = {
       connection.query(
         "SELECT * from medico inner join especializaciones e on e.id=medico.especializaciones_id where medico.id = ?",
         [id],
+        function (error, results) {
+          if (error == null) {
+            resolve(results);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
+  getMedicoByCiudad(ciudad) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "SELECT  medico.id , medico.imgUrl , medico.nombres , medico.apellidos , descripcion from medico inner join especializaciones e on e.id=medico.especializaciones_id where ciudad = ?",
+        [ciudad],
         function (error, results) {
           if (error == null) {
             resolve(results);
@@ -365,6 +402,57 @@ module.exports = {
                 resolve("cita agendada");
               }
             );
+            connection.query(
+              "SELECT email from users where id = ?",
+              [beneficiario],
+              function (error, results) {
+                to = results[0].email;
+                if (error == null) {
+                  connection.query(
+                    "SELECT * from agenda where id = ?",
+                    [agenda],
+                    function (error, results) {
+                      const transporter = nodemailer.createTransport({
+                        host: "smtp.gmail.com",
+                        port: 465,
+                        secure: true,
+                        auth: {
+                          user: "ander.er985@gmail.com",
+                          pass: "lnrfltbcxzswgyxa",
+                        },
+                        tls: {
+                          rejectUnauthorized: false,
+                        },
+                      });
+                      let MailOptions = {
+                        from: "forgot Your password",
+                        to: `${to}`,
+                        subject: "Cita Agendada",
+
+                        html: `
+                                    <p style='font-size:20px'>Cita Agendada</p>
+                                    <p style='font-size:20px'>fecha : ${results[0].fecha}</p>
+                                    <p style='font-size:20px'>fecha : ${results[0].hora}</p>
+
+                                  
+                                   `,
+                      };
+
+                      transporter.sendMail(MailOptions, (error, info) => {
+                        if (error) {
+                          reject(error);
+                        } else {
+                          console.log("email enviado");
+                          res.status(200).json(req.body);
+                        }
+                      });
+                    }
+                  );
+                } else {
+                  reject(error);
+                }
+              }
+            );
           } else {
             reject(error);
           }
@@ -413,6 +501,22 @@ module.exports = {
         "select * from agenda a inner join cita c on a.id = c.agenda_id where c.beneficiario_id = ? and a.estado = 'agendada'",
         [user],
         function (error, results) {
+          if (error == null) {
+            resolve(results);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
+  getCiudadMedicos() {
+    return new Promise(async (resolve, result) => {
+      connection.query(
+        "SELECT DISTINCT ciudad FROM medico",
+        function (error, results, fields) {
+          console.log(results);
           if (error == null) {
             resolve(results);
           } else {

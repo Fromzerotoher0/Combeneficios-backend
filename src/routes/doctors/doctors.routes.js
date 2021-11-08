@@ -16,12 +16,18 @@ const {
   agendarCita,
   getCitasMedico,
   getCitasUser,
+  medicosCiudad,
+  medicosByCiudad,
 } = require("./doctorsController");
 const router = Router();
 
 router.post("/solicitud", register);
 //metodo para obtener los medicos registrados
 router.get("/medicos", medicos);
+//metodo para obtener los ciudades donde hay medicos
+router.get("/medicosCiudad", medicosCiudad);
+//metodo obtener los medicos por su ciudad
+router.post("/medicosByCiudad", medicosByCiudad);
 //obtener los datos de un medico por su id
 router.post("/medico", medicosById);
 //obtener pregrado de un medico

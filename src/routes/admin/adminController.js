@@ -23,6 +23,8 @@ exports.aceptar = async (req, res, next) => {
     const direccion = req.body.direccion;
     const to = req.body.correo;
     const universidad = req.body.universidad;
+    const departamento = req.body.departamento;
+    const ciudad = req.body.ciudad;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
@@ -37,7 +39,9 @@ exports.aceptar = async (req, res, next) => {
       direccion,
       to,
       fechaYHora,
-      universidad
+      universidad,
+      departamento,
+      ciudad
     );
     res.status(200).json({
       error: false,
@@ -71,6 +75,7 @@ exports.aceptarEstudio = async (req, res, next) => {
   const medico_id = req.body.medico_id;
   const fecha_obtencion = req.body.fecha_obtencion;
   const especializacion = req.body.especializacion;
+
   let hora = new Date().getHours();
   let minuto = new Date().getMinutes();
   let segundo = new Date().getSeconds();

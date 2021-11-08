@@ -14,6 +14,8 @@ const {
   agendarCita,
   getCitasUser,
   getCitasMedico,
+  getCiudadMedicos,
+  getMedicoByCiudad,
 } = require("./ops");
 
 //registrar un medico
@@ -25,6 +27,8 @@ exports.register = async (req, res, next) => {
     const direccion = req.body.direccion;
     const users_id = req.body.id;
     const universidad = req.body.universidad;
+    const departamento = req.body.departamento;
+    const ciudad = req.body.ciudad;
 
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
@@ -38,7 +42,9 @@ exports.register = async (req, res, next) => {
       direccion,
       users_id,
       fechaYHora,
-      universidad
+      universidad,
+      departamento,
+      ciudad
     );
     res.status(200).json({
       error: false,
@@ -56,10 +62,26 @@ exports.medicos = async (req, res) => {
     result,
   });
 };
+
+exports.medicosCiudad = async (req, res) => {
+  const result = await getCiudadMedicos();
+  res.json({
+    result,
+  });
+};
 //obtener un medico por su id
 exports.medicosById = async (req, res) => {
   const id = req.body.id;
   const result = await getMedicoById(id);
+  res.json({
+    result,
+  });
+};
+//obtener un medico por su id
+exports.medicosByCiudad = async (req, res) => {
+  const ciudad = req.body.ciudad;
+  console.log(ciudad);
+  const result = await getMedicoByCiudad(ciudad);
   res.json({
     result,
   });
@@ -104,7 +126,7 @@ exports.solicitudEstudio = async (req, res, next) => {
     const medico_id = req.body.medico_id;
     const fecha_obtencion = req.body.fecha_obtencion;
     const especializaciones_id = req.body.especializaciones_id;
-    const imgUrl = `http://localhost:7000/public/${req.file.filename}`;
+    const imgUrl = `https://45.63.109.10:7000/public/${req.file.filename}`;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
