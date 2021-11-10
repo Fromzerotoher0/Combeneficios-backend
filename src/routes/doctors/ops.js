@@ -99,7 +99,7 @@ module.exports = {
   getMedicos() {
     return new Promise(async (resolve, result) => {
       connection.query(
-        "SELECT  medico.id , medico.imgUrl , medico.nombres , medico.apellidos , ciudad ,descripcion from medico inner join especializaciones e on e.id=medico.especializaciones_id",
+        "SELECT count(a.medico_id) as consultas,m.*, descripcion from agenda a right join medico m on m.id = a.medico_id inner join especializaciones e on e.id=m.especializaciones_id where a.estado = 'completada' or a.estado is null GROUP by m.nombres",
         function (error, results, fields) {
           console.log(results);
           if (error == null) {
@@ -115,7 +115,7 @@ module.exports = {
   getMedicoById(id) {
     return new Promise(async (resolve, reject) => {
       connection.query(
-        "SELECT * from medico inner join especializaciones e on e.id=medico.especializaciones_id where medico.id = ?",
+        "SELECT count(a.medico_id) as consultas,m.*, descripcion from agenda a right join medico m on m.id = ? inner join especializaciones e on e.id=m.especializaciones_id where a.estado = 'completada' or a.estado is null",
         [id],
         function (error, results) {
           if (error == null) {
@@ -129,6 +129,7 @@ module.exports = {
   },
 
   getMedicoByCiudad(ciudad) {
+    let date = new Date().toISOString().split("T")[0];
     return new Promise(async (resolve, reject) => {
       connection.query(
         "SELECT  medico.id , medico.imgUrl , medico.nombres , medico.apellidos , descripcion from medico inner join especializaciones e on e.id=medico.especializaciones_id where ciudad = ?",
@@ -353,23 +354,24 @@ module.exports = {
 
   getAgenda() {
     return new Promise(async (resolve, reject) => {
-      connection.query(
-        "SELECT * from agenda where estado = 'activo'",
-        function (error, results) {
-          if (error == null) {
-            resolve(results);
-          } else {
-            reject(error);
-          }
+      connection.query("SELECT * from agenda", function (error, results) {
+        if (error == null) {
+          console.log(results);
+          resolve(results);
+        } else {
+          reject(error);
         }
-      );
+      });
     });
   },
   //Lasst
   getAgendaMedico(medico_id) {
+    let date = new Date().toISOString().split("T")[0];
+    console.log(date);
     return new Promise(async (resolve, reject) => {
       connection.query(
-        "SELECT * from agenda where medico_id = ? and estado = 'activo'",
+        "SELECT a.id, a.fecha , a.hora , a.especialidad , c.beneficiario_id  ,u.nombres , u.apellidos FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha > ? and c.medico_id = ?",
+        [date, medico_id],
         [medico_id],
         function (error, results) {
           if (error == null) {
@@ -418,7 +420,7 @@ module.exports = {
                         secure: true,
                         auth: {
                           user: "ander.er985@gmail.com",
-                          pass: "lnrfltbcxzswgyxa",
+                          pass: "hhmtxqbnxucaxptx",
                         },
                         tls: {
                           rejectUnauthorized: false,
@@ -464,26 +466,18 @@ module.exports = {
   //obtener la agenda de citas de un medico
   getCitasMedico(user) {
     return new Promise(async (resolve, reject) => {
+      let date = new Date().toISOString().split("T")[0];
       connection.query(
         "select * from medico where users_id = ?",
         [user],
         async (error, result) => {
           connection.query(
-            "SELECT * from cita where medico_id = ? and estado = 'activo'",
-            [result[0].id],
+            "SELECT a.fecha , a.hora , a.especialidad , c.beneficiario_id ,c.agenda_id, u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha > ? and c.medico_id = ? and a.estado = 'agendada' ORDER by a.fecha",
+            [date, result[0].id],
             function (error, result) {
               if (error == null) {
-                connection.query(
-                  "SELECT * from agenda where medico_id = ? and estado = 'agendada'",
-                  [result[0].medico_id],
-                  function (error, results) {
-                    if (error == null) {
-                      resolve(results);
-                    } else {
-                      reject(error);
-                    }
-                  }
-                );
+                console.log(result);
+                resolve(result);
               } else {
                 reject(error);
               }
@@ -522,6 +516,63 @@ module.exports = {
           } else {
             reject(error);
           }
+        }
+      );
+    });
+  },
+
+  cancelarCita(id, email) {
+    console.log(id);
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        `UPDATE agenda SET estado='cancelada'
+            WHERE id=?`,
+        [id],
+        (error, results) => {
+          resolve(results);
+          const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+              user: "ander.er985@gmail.com",
+              pass: "hhmtxqbnxucaxptx",
+            },
+            tls: {
+              rejectUnauthorized: false,
+            },
+          });
+          let MailOptions = {
+            from: "forgot Your password",
+            to: `${email}`,
+            subject: "cita cancelada",
+
+            html: `
+                        <p style='font-size:20px'>lo sentimos pero su cita ha sido cancelada</p>
+            
+                        `,
+          };
+
+          transporter.sendMail(MailOptions, (error, info) => {
+            if (error) {
+              reject(error);
+            } else {
+              console.log("email enviado");
+            }
+          });
+        }
+      );
+    });
+  },
+
+  completarCita(id) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        `UPDATE agenda SET estado='completada'
+            WHERE id=?`,
+        [id],
+        (error, results) => {
+          resolve(results);
         }
       );
     });

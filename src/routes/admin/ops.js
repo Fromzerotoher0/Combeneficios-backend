@@ -159,7 +159,7 @@ module.exports = {
               secure: true,
               auth: {
                 user: "ander.er985@gmail.com",
-                pass: "lnrfltbcxzswgyxa",
+                pass: "hhmtxqbnxucaxptx",
               },
               tls: {
                 rejectUnauthorized: false,
@@ -205,7 +205,7 @@ module.exports = {
         secure: true,
         auth: {
           user: "ander.er985@gmail.com",
-          pass: "lnrfltbcxzswgyxa",
+          pass: "hhmtxqbnxucaxptx",
         },
         tls: {
           rejectUnauthorized: false,
@@ -300,7 +300,7 @@ module.exports = {
                   secure: true,
                   auth: {
                     user: "ander.er985@gmail.com",
-                    pass: "lnrfltbcxzswgyxa",
+                    pass: "hhmtxqbnxucaxptx",
                   },
                   tls: {
                     rejectUnauthorized: false,
@@ -355,7 +355,7 @@ module.exports = {
             secure: true,
             auth: {
               user: "ander.er985@gmail.com",
-              pass: "lnrfltbcxzswgyxa",
+              pass: "hhmtxqbnxucaxptx",
             },
             tls: {
               rejectUnauthorized: false,
