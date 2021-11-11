@@ -117,6 +117,7 @@ module.exports = {
                     } else {
                       medico_id = results[0].id;
                       console.log(medico_id);
+
                       connection.query(
                         //insertar solicitud en la base de datos
                         "INSERT INTO estudios SET ?",
@@ -134,6 +135,22 @@ module.exports = {
                           if (error) {
                             reject(error);
                           } else {
+                            connection.query(
+                              //insert del usuario en la base de datos
+                              "INSERT INTO agenda SET ?",
+                              {
+                                fecha: "0000-00-00",
+                                hora: "12:30 AM",
+                                especialidad: 1,
+                                medico_id: medico_id,
+                                tarifa: 12345,
+                                created_at: fechaYHora,
+                                updated_at: fechaYHora,
+                                estado: "completada",
+                              },
+                              async (error, results) => {}
+                            );
+
                             connection.query(
                               `UPDATE users SET tipo_usuario = 4
                               WHERE id=?`,
