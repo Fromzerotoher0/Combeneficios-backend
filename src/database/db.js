@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
   host: "mysql-combeneficios.alwaysdata.net",
   user: "244398_anderson",
   password: "16aa3240e",
-  database: "combeneficios_main",
+  database: "combeneficios_main_test",
 });
 
 connection.connect((error) => {

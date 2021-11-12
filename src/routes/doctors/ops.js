@@ -100,15 +100,15 @@ module.exports = {
     return new Promise(async (resolve, result) => {
       connection.query(
         `
-        SELECT count(a.medico_id) as consultas,m.*, descripcion ,AVG(c.calificacion) as calificacion 
+        SELECT count(a.medico_id) as consultas,m.*, descripcion , avg(NULLIF(c.calificacion ,0)) as calificacion
         from agenda a 
-        LEFT join Calificacion c on c.medico_id = a.medico_id 
-        right join medico m on m.id = a.medico_id 
-        inner join especializaciones e on e.id=m.especializaciones_id 
-        where a.estado = 'completada' or a.estado is null
-        GROUP by m.nombres
+        inner join medico m on m.id = a.medico_id
+        inner join especializaciones e on e.id=m.especializaciones_id
+        inner join cita c on c.medico_id = m.id and a.id = c.agenda_id
+        where a.estado = 'completada'
+        group by m.nombres
         `,
-        function (error, results, fields) {
+        function (error, results) {
           console.log(results);
           if (error == null) {
             resolve(results);
@@ -125,14 +125,15 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       connection.query(
         `
-        SELECT count(a.medico_id) as consultas,m.*, descripcion ,AVG(c.calificacion) as calificacion 
+        SELECT count(a.medico_id) as consultas,m.*, descripcion , avg(NULLIF(c.calificacion ,0)) as calificacion
         from agenda a 
-        LEFT join Calificacion c on c.medico_id = ?
-        right join medico m on m.id = ?
-        inner join especializaciones e on e.id=m.especializaciones_id 
-        where a.estado = 'completada' and a.medico_id = ?
+        inner join medico m on m.id = ?
+        inner join especializaciones e on e.id=m.especializaciones_id
+        inner join cita c on c.medico_id = m.id and a.id = c.agenda_id
+        where a.estado = 'completada'
+        group by m.nombres
         `,
-        [id, id, id],
+        [id],
         function (error, results) {
           if (error == null) {
             resolve(results);
