@@ -20,6 +20,8 @@ const {
   medicosByCiudad,
   cancelarCita,
   completarCita,
+  userHistorial,
+  calificar,
 } = require("./doctorsController");
 const router = Router();
 
@@ -59,9 +61,13 @@ router.post("/agendaMedico", agendaMedico);
 router.post("/agendaCita", agendarCita);
 //agenda de citas de un medicos getCitas
 router.post("/citas", getCitasMedico);
-//agenda de citas de un medicos getCitas
+//agenda de citas de un usuario
 router.post("/citasUsuario", getCitasUser);
 //cancelar cita - medico
 router.post("/cancelarCita", cancelarCita);
-//cancelar cita - medico
+//completar cita - medico
 router.post("/completarCita", completarCita);
+//obtener historial de citas de un usuario
+router.post("/historial", userHistorial);
+//calificar una cita
+router.post("/calificar", calificar);

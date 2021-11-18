@@ -1,5 +1,5 @@
 const connection = require("../../database/db");
-const nodemailer = require("nodemailer");
+const { sendEmail } = require("../../helpers/sendEmail");
 
 module.exports = {
   register(
@@ -105,7 +105,7 @@ module.exports = {
         inner join medico m on m.id = a.medico_id
         inner join especializaciones e on e.id=m.especializaciones_id
         inner join cita c on c.medico_id = m.id and a.id = c.agenda_id
-        where a.estado = 'completada'
+        where c.estado = 'completada'  and a.estado = 'completada'
         group by m.nombres
         `,
         function (error, results) {
@@ -130,7 +130,7 @@ module.exports = {
         inner join medico m on m.id = ?
         inner join especializaciones e on e.id=m.especializaciones_id
         inner join cita c on c.medico_id = m.id and a.id = c.agenda_id
-        where a.estado = 'completada'
+        where a.estado = 'completada' and c.estado = 'completada'
         group by m.nombres
         `,
         [id],
@@ -438,40 +438,15 @@ module.exports = {
                     "SELECT * from agenda where id = ?",
                     [agenda],
                     function (error, results) {
-                      const transporter = nodemailer.createTransport({
-                        host: "smtp.gmail.com",
-                        port: 465,
-                        secure: true,
-                        auth: {
-                          user: "ander.er985@gmail.com",
-                          pass: "hhmtxqbnxucaxptx",
-                        },
-                        tls: {
-                          rejectUnauthorized: false,
-                        },
-                      });
-                      let MailOptions = {
-                        from: "forgot Your password",
-                        to: `${to}`,
-                        subject: "Cita Agendada",
-
-                        html: `
-                                    <p style='font-size:20px'>Cita Agendada</p>
-                                    <p style='font-size:20px'>fecha : ${results[0].fecha}</p>
-                                    <p style='font-size:20px'>fecha : ${results[0].hora}</p>
-
-                                  
-                                   `,
-                      };
-
-                      transporter.sendMail(MailOptions, (error, info) => {
-                        if (error) {
-                          reject(error);
-                        } else {
-                          console.log("email enviado");
-                          res.status(200).json(req.body);
-                        }
-                      });
+                      sendEmail(
+                        to,
+                        "cita agendada",
+                        `
+                      <h1>su cita ha sido agendada correctamente</h1>
+                      <h2>Para el dia : ${results[0].fecha}</h2>
+                      <h2>a la hora : ${results[0].hora}</h2>
+                      `
+                      );
                     }
                   );
                 } else {
@@ -512,11 +487,34 @@ module.exports = {
     });
   },
 
-  //obtener las citas de un usuario
+  //obtener las citas pendientes de un usuario
   getCitasUser(user) {
     return new Promise(async (resolve, reject) => {
       connection.query(
         "select a.* , m.nombres , m.apellidos from agenda a inner join cita c on a.id = c.agenda_id inner join medico m on m.id = c.medico_id where c.beneficiario_id = ? and a.estado = 'agendada'",
+        [user],
+        function (error, results) {
+          if (error == null) {
+            resolve(results);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
+  //obtener el historial de citas completadas de un usuario
+  getUserHistorial(user) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        `
+        select c.id , a.fecha , a.hora, a.especialidad,m.nombres,m.apellidos , c.calificacion  from agenda a 
+        inner join cita c on c.agenda_id = a.id
+        inner join medico m on m.id = a.medico_id
+        where c.beneficiario_id = ? and c.estado = 'completada' and a.fecha != 0000-00-00
+        ORDER by a.fecha
+        `,
         [user],
         function (error, results) {
           if (error == null) {
@@ -549,41 +547,33 @@ module.exports = {
     console.log(id);
     return new Promise(async (resolve, reject) => {
       connection.query(
+        `UPDATE cita SET estado='cancelada'
+            WHERE agenda_id=?`,
+        [id],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          }
+        }
+      );
+
+      connection.query(
         `UPDATE agenda SET estado='cancelada'
             WHERE id=?`,
         [id],
         (error, results) => {
-          resolve(results);
-          const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
-            auth: {
-              user: "ander.er985@gmail.com",
-              pass: "hhmtxqbnxucaxptx",
-            },
-            tls: {
-              rejectUnauthorized: false,
-            },
-          });
-          let MailOptions = {
-            from: "forgot Your password",
-            to: `${email}`,
-            subject: "cita cancelada",
-
-            html: `
-                        <p style='font-size:20px'>lo sentimos pero su cita ha sido cancelada</p>
-            
-                        `,
-          };
-
-          transporter.sendMail(MailOptions, (error, info) => {
-            if (error) {
-              reject(error);
-            } else {
-              console.log("email enviado");
-            }
-          });
+          if (error) {
+            reject(error);
+          } else {
+            sendEmail(
+              email,
+              "cita Cancelada",
+              `
+            <h1>Lo sentimos su cita ha sido cancelada</h1>
+            `
+            );
+            resolve(results);
+          }
         }
       );
     });
@@ -592,11 +582,47 @@ module.exports = {
   completarCita(id) {
     return new Promise(async (resolve, reject) => {
       connection.query(
+        `UPDATE cita SET estado='completada'
+            WHERE agenda_id=?`,
+        [id],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          }
+        }
+      );
+
+      connection.query(
         `UPDATE agenda SET estado='completada'
             WHERE id=?`,
         [id],
         (error, results) => {
-          resolve(results);
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  },
+
+  //calificar
+  calificar(id, calificacion) {
+    return new Promise(async (resolve, result) => {
+      connection.query(
+        `
+        update cita set calificacion = ?
+        where id = ?
+        `,
+        [calificacion, id],
+        function (error, results, fields) {
+          console.log(results);
+          if (error == null) {
+            resolve(results);
+          } else {
+            reject(error);
+          }
         }
       );
     });

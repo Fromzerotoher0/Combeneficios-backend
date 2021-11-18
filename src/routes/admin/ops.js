@@ -148,7 +148,28 @@ module.exports = {
                                 updated_at: fechaYHora,
                                 estado: "completada",
                               },
-                              async (error, results) => {}
+                              async (error, results) => {
+                                connection.query(
+                                  //insert del usuario en la base de datos
+                                  "SELECT MAX(a.id) as agenda_id , MAX(m.id) AS medico_id FROM agenda a , medico m",
+                                  async (error, results) => {
+                                    connection.query(
+                                      //insert del usuario en la base de datos
+                                      "INSERT INTO cita SET ?",
+                                      {
+                                        agenda_id: results[0].agenda_id,
+                                        beneficiario_id: 1,
+                                        medico_id: results[0].medico_id,
+                                        calificacion: "",
+                                        created_at: fechaYHora,
+                                        updated_at: fechaYHora,
+                                        estado: "completada",
+                                      },
+                                      async (error, results) => {}
+                                    );
+                                  }
+                                );
+                              }
                             );
 
                             connection.query(

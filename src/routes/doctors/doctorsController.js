@@ -18,6 +18,8 @@ const {
   getMedicoByCiudad,
   cancelarCita,
   completarCita,
+  getUserHistorial,
+  calificar,
 } = require("./ops");
 
 //registrar un medico
@@ -128,7 +130,7 @@ exports.solicitudEstudio = async (req, res, next) => {
     const medico_id = req.body.medico_id;
     const fecha_obtencion = req.body.fecha_obtencion;
     const especializaciones_id = req.body.especializaciones_id;
-    const imgUrl = `https://localhost:7000/public/${req.file.filename}`;
+    const imgUrl = `https://45.63.109.10:7000/public/${req.file.filename}`;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
@@ -241,10 +243,30 @@ exports.cancelarCita = async (req, res) => {
     result,
   });
 };
-
+//marcar cita como completada
 exports.completarCita = async (req, res) => {
   const id = req.body.id;
   const result = await completarCita(id);
+  res.json({
+    result,
+  });
+};
+
+//obtener el historial de citas completadas de un usuario
+
+exports.userHistorial = async (req, res) => {
+  const id = req.body.id;
+  const result = await getUserHistorial(id);
+  res.json({
+    result,
+  });
+};
+
+//calificar una cita
+exports.calificar = async (req, res) => {
+  const id = req.body.id;
+  const calificacion = req.body.calificacion;
+  const result = await calificar(id, calificacion);
   res.json({
     result,
   });

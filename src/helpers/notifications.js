@@ -1,9 +1,9 @@
-const webpush = require("web-push");
+// const webpush = require("web-push");
 
-webpush.setVapidDetails(
-  "mailto:test@test.com",
-  process.env.public_key,
-  process.env.private_key
-);
+// webpush.setVapidDetails(
+//   "mailto:test@test.com",
+//   process.env.public_key,
+//   process.env.private_key
+// );
 
-module.exports = webpush;
+// module.exports = webpush;
