@@ -20,6 +20,7 @@ const {
   completarCita,
   getUserHistorial,
   calificar,
+  asistencia,
 } = require("./ops");
 
 //registrar un medico
@@ -130,7 +131,7 @@ exports.solicitudEstudio = async (req, res, next) => {
     const medico_id = req.body.medico_id;
     const fecha_obtencion = req.body.fecha_obtencion;
     const especializaciones_id = req.body.especializaciones_id;
-    const imgUrl = `https://45.63.109.10:7000/public/${req.file.filename}`;
+    const imgUrl = `https://localhost:7000/public/${req.file.filename}`;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
@@ -267,6 +268,14 @@ exports.calificar = async (req, res) => {
   const id = req.body.id;
   const calificacion = req.body.calificacion;
   const result = await calificar(id, calificacion);
+  res.json({
+    result,
+  });
+};
+exports.asistencia = async (req, res) => {
+  const id = req.body.id;
+  const asistio = req.body.asistencia;
+  const result = await asistencia(id, asistio);
   res.json({
     result,
   });

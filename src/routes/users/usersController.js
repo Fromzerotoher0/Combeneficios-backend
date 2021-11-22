@@ -6,6 +6,7 @@ const {
   getBeneficiarios,
   updateUser,
   getUserById,
+  updatePhoto,
 } = require("./ops");
 
 module.exports = {
@@ -104,6 +105,25 @@ module.exports = {
       const beneficiario = req.body.id;
       const agenda_id = req.body.agenda_id;
       const result = await postCita(beneficiario, agenda_id);
+      res.status(200).json({
+        error: false,
+        msg: "cita agendada",
+        result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  //cambiar foto de perfil
+  async cambiarFoto(req, res, next) {
+    try {
+      const imgUrl = `https://localhost:7000/public/${req.file.filename}`;
+      const id = req.body.id;
+      console.log("imagen");
+      console.log(imgUrl);
+      console.log(id);
+      const result = await updatePhoto(imgUrl, id);
       res.status(200).json({
         error: false,
         msg: "cita agendada",

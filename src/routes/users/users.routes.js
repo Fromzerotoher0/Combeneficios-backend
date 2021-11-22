@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const upload = require("../../middlewares/storage");
 const {
   getBeneficiariesController,
   updateUserController,
@@ -6,6 +7,7 @@ const {
   getDepartamentosController,
   citaController,
   getUserController,
+  cambiarFoto,
 } = require("./usersController");
 
 const router = Router();
@@ -14,6 +16,8 @@ const router = Router();
 router.post("/user", getUserController);
 //metodo para actualizar los datos de un usuario/beneficiario
 router.put("/user", updateUserController);
+//metodo para actualizar la foto de un usuario
+router.put("/foto", upload.single("image"), cambiarFoto);
 //metodo para obtener los beneficiarios afiliados a un usuario
 router.post("/beneficiaries", getBeneficiariesController);
 //obtener listado de ciudades

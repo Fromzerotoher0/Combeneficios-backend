@@ -22,6 +22,7 @@ const {
   completarCita,
   userHistorial,
   calificar,
+  asistencia,
 } = require("./doctorsController");
 const router = Router();
 
@@ -71,3 +72,5 @@ router.post("/completarCita", completarCita);
 router.post("/historial", userHistorial);
 //calificar una cita
 router.post("/calificar", calificar);
+//verificar asistencia
+router.post("/asistencia", asistencia);

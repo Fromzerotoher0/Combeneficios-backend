@@ -109,4 +109,21 @@ module.exports = {
       );
     });
   },
+
+  updatePhoto(url, id) {
+    console.log(url, id);
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "UPDATE users SET imgUrl = ? WHERE id = ?",
+        [url, id],
+        (error, results) => {
+          if (error == null) {
+            resolve("foto actualizada");
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
 };

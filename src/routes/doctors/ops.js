@@ -509,7 +509,7 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       connection.query(
         `
-        select c.id , a.fecha , a.hora, a.especialidad,m.nombres,m.apellidos , c.calificacion  from agenda a 
+        select c.id , a.fecha , a.hora, a.especialidad,m.nombres,m.apellidos , c.calificacion , c.asistio from agenda a 
         inner join cita c on c.agenda_id = a.id
         inner join medico m on m.id = a.medico_id
         where c.beneficiario_id = ? and c.estado = 'completada' and a.fecha != 0000-00-00
@@ -586,9 +586,35 @@ module.exports = {
             WHERE agenda_id=?`,
         [id],
         (error, results) => {
-          if (error) {
-            reject(error);
-          }
+          connection.query(
+            "SELECT beneficiario_id from cita where id = ?",
+            [id],
+            function (error, results, fields) {
+              if (error == null) {
+                connection.query(
+                  "SELECT email from users where id = ?",
+                  [results[0].beneficiario_id],
+                  function (error, results, fields) {
+                    if (error == null) {
+                      sendEmail(
+                        results[0].email,
+                        "cita completada",
+                        `
+                      <h1>cita finalizada , muchas gracias por usar nuestros servicios</h1>
+                      <h2>lo invitamos a calificar y confirmar su asistencia en el siguiente link</h2>
+                      <h2>http://localhost:4200/medicos/historial</h2>
+                      `
+                      );
+                    } else {
+                      reject(error);
+                    }
+                  }
+                );
+              } else {
+                reject(error);
+              }
+            }
+          );
         }
       );
 
@@ -620,6 +646,29 @@ module.exports = {
           console.log(results);
           if (error == null) {
             resolve(results);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
+  asistencia(id, asistencia) {
+    console.log(id);
+    console.log(asistencia);
+    return new Promise(async (resolve, result) => {
+      connection.query(
+        `
+        UPDATE cita
+        SET asistio = ?
+        WHERE id = ?;
+        `,
+        [asistencia, id],
+        function (error, results, fields) {
+          console.log(results);
+          if (error == null) {
+            resolve(results.message);
           } else {
             reject(error);
           }
