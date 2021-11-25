@@ -23,6 +23,7 @@ const {
   userHistorial,
   calificar,
   asistencia,
+  especializacionesDisponibles,
 } = require("./doctorsController");
 const router = Router();
 
@@ -39,8 +40,8 @@ router.post("/medico", medicosById);
 router.post("/medico/especializaciones", medicosstudies);
 //obtener pregrado de un medico
 router.post("/medico/estudios", medicosPregrade);
-//obtener especializaciones de un medico
-router.post("/medico/especializacion", medicosEspecialization);
+//obtener todas las especializaciones disponibles
+router.get("/especializacionDisponible", especializacionesDisponibles);
 //obtener todas las especializaciones
 router.get("/especializaciones", especializaciones);
 //solicitud para añadir una especializacion a un medico

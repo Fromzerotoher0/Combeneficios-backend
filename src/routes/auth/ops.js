@@ -66,19 +66,14 @@ module.exports = {
       const salt = await bcrypt.genSalt(8);
       let passHash = await bcrypt.hash(contrasena, salt);
       //expresiones regulares para validar email y contraseña
-      let regex_pass =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){6,15}$/;
+      let regex_pass = /^[a-z0-9_-]{4,30}$/;
 
       let regex_email =
         /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
       //condicion para validar contraseña
       if (regex_pass.test(contrasena) == false) {
-        reject(
-          new Error(
-            "la contraseña debe tener mas de 5  y menos de 16 caracteres , al menos una letra mayúscula ,al menos una letra minucula , al menos un dígito , sin espacios en blanco , al menos 1 caracter especial"
-          )
-        );
+        reject(new Error("la contraseña debe tener Mínimo 4 caracteres"));
         //condicion para validar correo
       } else if (regex_email.test(correo) == false) {
         reject(new Error("correo electronico invalido"));

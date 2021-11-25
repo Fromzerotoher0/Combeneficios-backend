@@ -232,6 +232,21 @@ module.exports = {
     });
   },
 
+  getEspecs() {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "SELECT DISTINCT e.descripcion FROM especializaciones e inner join medico m on m.especializaciones_id = e.id",
+        function (error, results, fields) {
+          if (error == null) {
+            resolve(results);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
   solicitudEstudio(
     universidad,
     medico_id,
@@ -602,7 +617,7 @@ module.exports = {
                         `
                       <h1>cita finalizada , muchas gracias por usar nuestros servicios</h1>
                       <h2>lo invitamos a calificar y confirmar su asistencia en el siguiente link</h2>
-                      <h2>http://localhost:4200/medicos/historial</h2>
+                      <h2>http://45.63.109.10:4200/medicos/historial</h2>
                       `
                       );
                     } else {
