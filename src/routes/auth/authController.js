@@ -1,5 +1,4 @@
-const connection = require("../../database/db");
-const { login, register } = require("./ops");
+const { login, register, forgot } = require("./ops");
 
 //metodo para registrar un usuario
 exports.register = async (req, res, next) => {
@@ -77,6 +76,15 @@ exports.login = async (req, res, next) => {
       usuario: result.userName + " " + result.lastName,
       token: result.token,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.forgot = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    result = await forgot(email);
   } catch (error) {
     next(error);
   }

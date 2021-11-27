@@ -1,6 +1,8 @@
 const connection = require("../../database/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const CryptoJS = require("crypto-js");
+const { sendEmail } = require("../../helpers/sendEmail");
 
 module.exports = {
   login(user, contrasena) {
@@ -10,34 +12,40 @@ module.exports = {
         "SELECT * FROM users where nro_documento = ?",
         [user],
         async (error, results) => {
-          //comparar la contraseña ingresada con la de la bd
-          if (
-            results.length == 0 ||
-            !(await bcrypt.compareSync(contrasena, results[0].contrasena))
-          ) {
+          if (results[0] == undefined) {
             reject(new Error("usuario y/o contraseña incorrectos"));
-          }
-          //verificar que el usuario este activo en la plataforma
-          else if (results.estado === "inactivo") {
-            reject(new Error("usuario inactivo"));
-          }
-          //inicio de sesion exitoso
-          else {
-            const userName = results[0].nombres;
-            const lastName = results[0].apellidos;
-            const id = results[0].id;
-            const tipo_usuario = results[0].tipo_usuario;
-            const ciudad = results[0].ciudad;
-            //generacion del JWT
-            const token = jwt.sign(
-              { id: id, ciudad: ciudad, tipo_usuario: tipo_usuario },
-              process.env.SECRET_KEY,
-              {
-                expiresIn: process.env.JWT_EXPIRE,
-              }
+          } else {
+            decryptPassword = CryptoJS.AES.decrypt(
+              results[0].contrasena,
+              "siacsas"
             );
-            resolve({ id, token, userName, lastName });
-          }
+            utf8 = decryptPassword.toString(CryptoJS.enc.Utf8);
+            //comparar la contraseña ingresada con la de la bd
+            if (results.length == 0 || contrasena !== utf8) {
+              reject(new Error("usuario y/o contraseña incorrectos"));
+            }
+            //verificar que el usuario este activo en la plataforma
+            else if (results.estado === "inactivo") {
+              reject(new Error("usuario inactivo"));
+            }
+            //inicio de sesion exitoso
+            else {
+              const userName = results[0].nombres;
+              const lastName = results[0].apellidos;
+              const id = results[0].id;
+              const tipo_usuario = results[0].tipo_usuario;
+              const ciudad = results[0].ciudad;
+              //generacion del JWT
+              const token = jwt.sign(
+                { id: id, ciudad: ciudad, tipo_usuario: tipo_usuario },
+                process.env.SECRET_KEY,
+                {
+                  expiresIn: process.env.JWT_EXPIRE,
+                }
+              );
+              resolve({ id, token, userName, lastName });
+            }
+          } //alv
         }
       );
     });
@@ -63,8 +71,7 @@ module.exports = {
       let titular_id = 0;
       let departamento_string = "";
       //metodo para encriptar la contraseña
-      const salt = await bcrypt.genSalt(8);
-      let passHash = await bcrypt.hash(contrasena, salt);
+      let passHash = CryptoJS.AES.encrypt(contrasena, "siacsas").toString();
       //expresiones regulares para validar email y contraseña
       let regex_pass = /^[a-z0-9_-]{4,30}$/;
 
@@ -152,6 +159,36 @@ module.exports = {
           }
         );
       }
+    });
+  },
+
+  forgot(email) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "select contrasena from users where email = ?",
+        [email],
+        (error, results) => {
+          if (results.length < 1) {
+            reject(new Error("el correo ingresado no esta registrado"));
+          } else {
+            decryptPassword = CryptoJS.AES.decrypt(
+              results[0].contrasena,
+              "siacsas"
+            );
+            utf8 = decryptPassword.toString(CryptoJS.enc.Utf8);
+            console.log(utf8);
+
+            sendEmail(
+              email,
+              "recuperacion de contraseña",
+              `
+            <h1>Su Contraseña es :</h1>
+            <h2>${utf8}</h2>
+            `
+            );
+          }
+        }
+      );
     });
   },
 };
