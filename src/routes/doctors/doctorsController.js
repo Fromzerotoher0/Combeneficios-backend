@@ -22,6 +22,7 @@ const {
   calificar,
   asistencia,
   getEspecs,
+  cancelarCitaUser,
 } = require("./ops");
 
 //registrar un medico
@@ -287,6 +288,15 @@ exports.asistencia = async (req, res) => {
   const id = req.body.id;
   const asistio = req.body.asistencia;
   const result = await asistencia(id, asistio);
+  res.json({
+    result,
+  });
+};
+
+exports.cancelarCitaUser = async (req, res) => {
+  const id = req.body.id;
+  const cita = req.body.cita;
+  const result = await cancelarCitaUser(id, cita);
   res.json({
     result,
   });

@@ -668,7 +668,7 @@ module.exports = {
       );
     });
   },
-
+  //asistencia
   asistencia(id, asistencia) {
     console.log(id);
     console.log(asistencia);
@@ -687,6 +687,50 @@ module.exports = {
           } else {
             reject(error);
           }
+        }
+      );
+    });
+  },
+
+  cancelarCitaUser(id, cita) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "SELECT m.id , u.email FROM medico m inner join users u on m.users_id = u.id where m.id = ?",
+        [id],
+        (error, results) => {
+          email = results[0].email;
+          connection.query(
+            `UPDATE cita SET estado='cancelada'
+                WHERE agenda_id=?`,
+            [cita],
+            (error, results) => {
+              if (error) {
+                reject(error);
+              }
+            }
+          );
+
+          connection.query(
+            `UPDATE agenda SET estado='activo'
+                WHERE id=?`,
+            [cita],
+            (error, results) => {
+              if (error) {
+                reject(error);
+              } else {
+                sendEmail(
+                  email,
+                  "cita Cancelada",
+                  `
+                <h1>Lo sentimos el usuario ha decidido cancelar la cita ,
+                se ha vuelto a añadir a su lista de citas disponibles
+                </h1>
+                `
+                );
+                resolve(results);
+              }
+            }
+          );
         }
       );
     });

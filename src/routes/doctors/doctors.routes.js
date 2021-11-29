@@ -24,6 +24,7 @@ const {
   calificar,
   asistencia,
   especializacionesDisponibles,
+  cancelarCitaUser,
 } = require("./doctorsController");
 const router = Router();
 
@@ -75,3 +76,5 @@ router.post("/historial", userHistorial);
 router.post("/calificar", calificar);
 //verificar asistencia
 router.post("/asistencia", asistencia);
+//cancelar cita del lado del usuario
+router.post("/cancelarCitaUser", cancelarCitaUser);
