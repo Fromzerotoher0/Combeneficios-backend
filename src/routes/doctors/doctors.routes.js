@@ -25,6 +25,7 @@ const {
   asistencia,
   especializacionesDisponibles,
   cancelarCitaUser,
+  modalidad,
 } = require("./doctorsController");
 const router = Router();
 
@@ -45,6 +46,8 @@ router.post("/medico/estudios", medicosPregrade);
 router.get("/especializacionDisponible", especializacionesDisponibles);
 //obtener todas las especializaciones
 router.get("/especializaciones", especializaciones);
+//obtener las modalidades de un medico
+router.post("/modalidad", modalidad);
 //solicitud para añadir una especializacion a un medico
 router.post(
   "/medico/agregarEspecializacion",

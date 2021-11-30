@@ -165,13 +165,13 @@ module.exports = {
   getMedicosStudies(id) {
     return new Promise(async (resolve, reject) => {
       connection.query(
-        "select * from medico where users_id = ?",
+        "select *  from medico where users_id = ?",
         [id],
         function (error, results) {
           connection.query(
             "SELECT * from estudios where medico_id = ?",
             [results[0].id],
-            function (error, results, fields) {
+            function (error, results) {
               if (error == null) {
                 resolve(results);
               } else {
@@ -179,6 +179,28 @@ module.exports = {
               }
             }
           );
+        }
+      );
+    });
+  },
+
+  getModalidad(id) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "select modalidad_cita  from medico where users_id = ?",
+        [id],
+        function (error, results) {
+          if (error == null) {
+            if (results[0].modalidad_cita == "presencial/virtual") {
+              modalidad = ["presencial", "virtual"];
+              resolve(modalidad);
+            } else {
+              modalidad = [`${results[0].modalidad_cita}`];
+              resolve(modalidad);
+            }
+          } else {
+            reject(error);
+          }
         }
       );
     });
@@ -335,8 +357,17 @@ module.exports = {
     });
   },
 
-  agenda(fecha_cita, hora_cita, medico_id, tarifa, especialidad, fechaYHora) {
+  agenda(
+    fecha_cita,
+    hora_cita,
+    medico_id,
+    tarifa,
+    especialidad,
+    modalidad,
+    fechaYHora
+  ) {
     return new Promise(async (resolve, reject) => {
+      console.log(modalidad);
       connection.query(
         "SELECT medico.id FROM medico where medico.users_id = ? ",
         [medico_id],
@@ -352,6 +383,7 @@ module.exports = {
                 especialidad: especialidad,
                 medico_id: medico_id,
                 tarifa: tarifa,
+                modalidad: modalidad,
                 created_at: fechaYHora,
                 updated_at: fechaYHora,
                 estado: "activo",
@@ -422,7 +454,7 @@ module.exports = {
       );
     });
   },
-  agendarCita(agenda, beneficiario, fecha, medico_id) {
+  agendarCita(agenda, beneficiario, fecha, medico_id, modalidad) {
     return new Promise(async (resolve, reject) => {
       connection.query(
         "insert into cita set ?",
@@ -453,15 +485,32 @@ module.exports = {
                     "SELECT * from agenda where id = ?",
                     [agenda],
                     function (error, results) {
-                      sendEmail(
-                        to,
-                        "cita agendada",
-                        `
+                      console.log(modalidad);
+                      if (modalidad == "virtual") {
+                        const MeetUrl =
+                          Math.floor(Math.random() * 10000000000) + 1;
+                        sendEmail(
+                          to,
+                          "cita agendada",
+                          `
                       <h1>su cita ha sido agendada correctamente</h1>
                       <h2>Para el dia : ${results[0].fecha}</h2>
                       <h2>a la hora : ${results[0].hora}</h2>
+                      <h2>debe entrar a este link a la fecha y hora de la cita para ser atendindo</h2>
+                      <a href=https://meet.jit.si/${MeetUrl}>https://meet.jit.si/combeneficios${MeetUrl}</a>
                       `
-                      );
+                        );
+                      } else {
+                        sendEmail(
+                          to,
+                          "cita agendada",
+                          `
+                        <h1>su cita ha sido agendada correctamente</h1>
+                        <h2>Para el dia : ${results[0].fecha}</h2>
+                        <h2>a la hora : ${results[0].hora}</h2>
+                        `
+                        );
+                      }
                     }
                   );
                 } else {
@@ -486,7 +535,7 @@ module.exports = {
         [user],
         async (error, result) => {
           connection.query(
-            "SELECT a.fecha , a.hora , a.especialidad , c.beneficiario_id ,c.agenda_id, u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha > ? and c.medico_id = ? and a.estado = 'agendada' ORDER by a.fecha",
+            "SELECT a.fecha , a.hora ,a.estado, a.especialidad , c.beneficiario_id ,c.agenda_id, u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha > ? and c.medico_id = ? and a.estado = 'agendada' ORDER by a.fecha",
             [date, result[0].id],
             function (error, result) {
               if (error == null) {

@@ -23,6 +23,7 @@ const {
   asistencia,
   getEspecs,
   cancelarCitaUser,
+  getModalidad,
 } = require("./ops");
 
 //registrar un medico
@@ -103,6 +104,14 @@ exports.medicosstudies = async (req, res) => {
   });
 };
 
+exports.modalidad = async (req, res) => {
+  const id = req.body.id;
+  const result = await getModalidad(id);
+  res.json({
+    result,
+  });
+};
+
 //obtener los estudios de pregrado de un medico
 exports.medicosPregrade = async (req, res) => {
   const id = req.body.id;
@@ -177,6 +186,7 @@ exports.agenda = async (req, res) => {
   const medico_id = req.body.medico_id;
   const tarifa = req.body.tarifa;
   const especialidad = req.body.especialidad;
+  const modalidad = req.body.modalidad;
   let hora = new Date().getHours();
   let minuto = new Date().getMinutes();
   let segundo = new Date().getSeconds();
@@ -189,6 +199,7 @@ exports.agenda = async (req, res) => {
     medico_id,
     tarifa,
     especialidad,
+    modalidad,
     fechaYHora
   );
   res.json({
@@ -216,6 +227,7 @@ exports.agendarCita = async (req, res) => {
   const beneficiario = req.body.beneficiario_id;
   const agenda = req.body.agenda_id;
   const medico_id = req.body.medico_id;
+  const modalidad = req.body.modalidad;
   let hora = new Date().getHours();
   let minuto = new Date().getMinutes();
   let segundo = new Date().getSeconds();
@@ -223,7 +235,13 @@ exports.agendarCita = async (req, res) => {
   let date = new Date().toISOString().split("T")[0];
   let fechaYHora = date + " " + fecha;
   console.log(`beneficiario ${beneficiario} - agenda ${agenda}`);
-  const result = await agendarCita(agenda, beneficiario, fechaYHora, medico_id);
+  const result = await agendarCita(
+    agenda,
+    beneficiario,
+    fechaYHora,
+    medico_id,
+    modalidad
+  );
   res.json({
     result,
   });
