@@ -171,6 +171,7 @@ module.exports = {
           if (results.length < 1) {
             reject(new Error("el correo ingresado no esta registrado"));
           } else {
+            resolve("contraseña enviada a su correo");
             decryptPassword = CryptoJS.AES.decrypt(
               results[0].contrasena,
               "siacsas"

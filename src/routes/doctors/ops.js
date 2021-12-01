@@ -406,6 +406,7 @@ module.exports = {
                 especialidad: especialidad,
                 medico_id: medico_id,
                 tarifa: tarifa,
+                modalidad: modalidad,
                 created_at: fechaYHora,
                 updated_at: fechaYHora,
                 estado: "activo",
@@ -456,51 +457,95 @@ module.exports = {
   },
   agendarCita(agenda, beneficiario, fecha, medico_id, modalidad) {
     return new Promise(async (resolve, reject) => {
-      connection.query(
-        "insert into cita set ?",
-        {
-          agenda_id: agenda,
-          beneficiario_id: beneficiario,
-          medico_id: medico_id,
-          created_at: fecha,
-          updated_at: fecha,
-          estado: "activo",
-        },
-        async (error, result) => {
-          if (error == null) {
-            connection.query(
-              "UPDATE agenda SET estado = 'agendada' WHERE id = ?",
-              [agenda],
-              async (error, result) => {
-                resolve("cita agendada");
-              }
-            );
-            connection.query(
-              "SELECT email from users where id = ?",
-              [beneficiario],
-              function (error, results) {
-                to = results[0].email;
-                if (error == null) {
-                  connection.query(
-                    "SELECT * from agenda where id = ?",
-                    [agenda],
-                    function (error, results) {
-                      console.log(modalidad);
-                      if (modalidad == "virtual") {
-                        const MeetUrl =
-                          Math.floor(Math.random() * 10000000000) + 1;
+      const MeetUrl = Math.floor(Math.random() * 10000000000) + 1;
+
+      if (modalidad == "virtual") {
+        connection.query(
+          "insert into cita set ?",
+          {
+            agenda_id: agenda,
+            beneficiario_id: beneficiario,
+            medico_id: medico_id,
+            urlCita: `https://meet.jit.si/combeneficios${MeetUrl}`,
+            created_at: fecha,
+            updated_at: fecha,
+            estado: "activo",
+          },
+          async (error, result) => {
+            if (error == null) {
+              connection.query(
+                "UPDATE agenda SET estado = 'agendada' WHERE id = ?",
+                [agenda],
+                async (error, result) => {
+                  resolve("cita agendada");
+                }
+              );
+              connection.query(
+                "SELECT email from users where id = ?",
+                [beneficiario],
+                function (error, results) {
+                  to = results[0].email;
+                  if (error == null) {
+                    connection.query(
+                      "SELECT * from agenda where id = ?",
+                      [agenda],
+                      function (error, results) {
+                        console.log(modalidad);
                         sendEmail(
                           to,
                           "cita agendada",
                           `
-                      <h1>su cita ha sido agendada correctamente</h1>
-                      <h2>Para el dia : ${results[0].fecha}</h2>
-                      <h2>a la hora : ${results[0].hora}</h2>
-                      <h2>debe entrar a este link a la fecha y hora de la cita para ser atendindo</h2>
-                      <a href=https://meet.jit.si/${MeetUrl}>https://meet.jit.si/combeneficios${MeetUrl}</a>
-                      `
+                        <h1>su cita ha sido agendada correctamente</h1>
+                        <h2>Para el dia : ${results[0].fecha}</h2>
+                        <h2>a la hora : ${results[0].hora}</h2>
+                        <h2>debe entrar a este link a la fecha y hora de la cita para ser atendindo</h2>
+                        <a href=https://meet.jit.si/${MeetUrl}>https://meet.jit.si/combeneficios${MeetUrl}</a>
+                        `
                         );
-                      } else {
+                      }
+                    );
+                  } else {
+                    reject(error);
+                  }
+                }
+              );
+            } else {
+              reject(error);
+            }
+          }
+        );
+      } else {
+        connection.query(
+          "insert into cita set ?",
+          {
+            agenda_id: agenda,
+            beneficiario_id: beneficiario,
+            medico_id: medico_id,
+            urlCita: null,
+            created_at: fecha,
+            updated_at: fecha,
+            estado: "activo",
+          },
+          async (error, result) => {
+            if (error == null) {
+              connection.query(
+                "UPDATE agenda SET estado = 'agendada' WHERE id = ?",
+                [agenda],
+                async (error, result) => {
+                  resolve("cita agendada");
+                }
+              );
+              connection.query(
+                "SELECT email from users where id = ?",
+                [beneficiario],
+                function (error, results) {
+                  to = results[0].email;
+                  if (error == null) {
+                    connection.query(
+                      "SELECT * from agenda where id = ?",
+                      [agenda],
+                      function (error, results) {
+                        console.log(modalidad);
                         sendEmail(
                           to,
                           "cita agendada",
@@ -511,18 +556,18 @@ module.exports = {
                         `
                         );
                       }
-                    }
-                  );
-                } else {
-                  reject(error);
+                    );
+                  } else {
+                    reject(error);
+                  }
                 }
-              }
-            );
-          } else {
-            reject(error);
+              );
+            } else {
+              reject(error);
+            }
           }
-        }
-      );
+        );
+      }
     });
   },
 
@@ -555,7 +600,7 @@ module.exports = {
   getCitasUser(user) {
     return new Promise(async (resolve, reject) => {
       connection.query(
-        "select a.* , m.nombres , m.apellidos from agenda a inner join cita c on a.id = c.agenda_id inner join medico m on m.id = c.medico_id where c.beneficiario_id = ? and a.estado = 'agendada'",
+        "select a.* , m.nombres , m.apellidos , c.urlCita from agenda a inner join cita c on a.id = c.agenda_id inner join medico m on m.id = c.medico_id where c.beneficiario_id = ? and a.estado = 'agendada'",
         [user],
         function (error, results) {
           if (error == null) {

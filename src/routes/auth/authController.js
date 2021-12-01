@@ -85,6 +85,9 @@ exports.forgot = async (req, res, next) => {
   try {
     const email = req.body.email;
     result = await forgot(email);
+    res.status(200).json({
+      result,
+    });
   } catch (error) {
     next(error);
   }
