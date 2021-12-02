@@ -696,7 +696,7 @@ module.exports = {
         [id],
         (error, results) => {
           connection.query(
-            "SELECT beneficiario_id from cita where id = ?",
+            "SELECT beneficiario_id from cita where agenda_id = ?",
             [id],
             function (error, results, fields) {
               if (error == null) {
