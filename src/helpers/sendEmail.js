@@ -7,8 +7,8 @@ module.exports = {
       port: 465,
       secure: true,
       auth: {
-        user: "ander.er985@gmail.com",
-        pass: "binwfeantflolezf",
+        user: "combeneficios@gmail.com",
+        pass: "iauyrblfrakbvrsk",
       },
       tls: {
         rejectUnauthorized: false,

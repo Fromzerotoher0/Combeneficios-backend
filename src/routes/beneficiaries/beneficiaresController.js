@@ -1,5 +1,15 @@
 //metodo para registrar a un beneficiario
-const { addBeneficiary } = require("./ops");
+const {
+  addBeneficiary,
+  cancelarCita,
+  asistencia,
+  calificar,
+  getHistorial,
+  getCitas,
+  agendarCita,
+} = require("./ops");
+
+//controlador para registrar un nuevo beneficiario
 exports.register = async (req, res, next) => {
   try {
     //parametros obtenidos del body de la peticion
@@ -48,4 +58,78 @@ exports.register = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+//controlador para agendar una cita
+exports.agendarCita = async (req, res) => {
+  const beneficiario = req.body.beneficiario_id;
+  const agenda = req.body.agenda_id;
+  const medico_id = req.body.medico_id;
+  const modalidad = req.body.modalidad;
+  let hora = new Date().getHours();
+  let minuto = new Date().getMinutes();
+  let segundo = new Date().getSeconds();
+  let fecha = hora + ":" + minuto + ":" + segundo;
+  let date = new Date().toISOString().split("T")[0];
+  let fechaYHora = date + " " + fecha;
+  console.log(`beneficiario ${beneficiario} - agenda ${agenda}`);
+  const result = await agendarCita(
+    agenda,
+    beneficiario,
+    fechaYHora,
+    medico_id,
+    modalidad
+  );
+  res.json({
+    result,
+  });
+};
+
+//controlador para que un usuario pueda cancelar una cita
+exports.cancelarCita = async (req, res) => {
+  const id = req.body.id;
+  const cita = req.body.cita;
+  const result = await cancelarCita(id, cita);
+  res.json({
+    result,
+  });
+};
+
+//controlador para que un usuario confirme su asistencia a una cita
+exports.asistencia = async (req, res) => {
+  const id = req.body.id;
+  const asistio = req.body.asistencia;
+  const result = await asistencia(id, asistio);
+  res.json({
+    result,
+  });
+};
+
+//controlador para que un usuario califique una cita
+exports.calificar = async (req, res) => {
+  const id = req.body.id;
+  const calificacion = req.body.calificacion;
+  const result = await calificar(id, calificacion);
+  res.json({
+    result,
+  });
+};
+
+//controlador para obtener el historial de citas de un usuario
+exports.historial = async (req, res) => {
+  const id = req.body.id;
+  const result = await getHistorial(id);
+  res.json({
+    result,
+  });
+};
+
+//controlador para obtener las citas pendientes de un usuario
+
+exports.getCitas = async (req, res) => {
+  const user = req.body.id;
+  const result = await getCitas(user);
+  res.json({
+    result,
+  });
 };

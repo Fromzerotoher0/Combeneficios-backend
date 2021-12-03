@@ -1,4 +1,3 @@
-const connection = require("../../database/db");
 const {
   postCita,
   getMunicipios,
@@ -99,8 +98,6 @@ module.exports = {
 
   //agendar una cita
   async citaController(req, res, next) {
-    const beneficiario = req.body.id;
-    const agenda_id = req.body.agenda_id;
     try {
       const beneficiario = req.body.id;
       const agenda_id = req.body.agenda_id;

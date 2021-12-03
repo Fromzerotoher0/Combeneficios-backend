@@ -12,17 +12,12 @@ const {
   solicitudEstudio,
   getMedicosStudies,
   agendarCita,
-  getCitasUser,
   getCitasMedico,
   getCiudadMedicos,
   getMedicoByCiudad,
   cancelarCita,
   completarCita,
-  getUserHistorial,
-  calificar,
-  asistencia,
   getEspecs,
-  cancelarCitaUser,
   getModalidad,
 } = require("./ops");
 
@@ -70,7 +65,7 @@ exports.medicos = async (req, res) => {
     result,
   });
 };
-
+//obtener un listado de ciudades en las que hay medicos disponibles
 exports.medicosCiudad = async (req, res) => {
   const result = await getCiudadMedicos();
   res.json({
@@ -85,7 +80,7 @@ exports.medicosById = async (req, res) => {
     result,
   });
 };
-//obtener un medico por su id
+//obtener un medico por su ciudad
 exports.medicosByCiudad = async (req, res) => {
   const ciudad = req.body.ciudad;
   console.log(ciudad);
@@ -95,7 +90,7 @@ exports.medicosByCiudad = async (req, res) => {
   });
 };
 //obtener los estudios de un medico
-exports.medicosstudies = async (req, res) => {
+exports.estudios = async (req, res) => {
   const id = req.body.id;
   console.log(id);
   const result = await getMedicosStudies(id);
@@ -103,7 +98,7 @@ exports.medicosstudies = async (req, res) => {
     result,
   });
 };
-
+//obtener las modalidades de un medico
 exports.modalidad = async (req, res) => {
   const id = req.body.id;
   const result = await getModalidad(id);
@@ -113,7 +108,7 @@ exports.modalidad = async (req, res) => {
 };
 
 //obtener los estudios de pregrado de un medico
-exports.medicosPregrade = async (req, res) => {
+exports.pregrado = async (req, res) => {
   const id = req.body.id;
   const result = await getMedicosPregrade(id);
   res.json({
@@ -121,14 +116,14 @@ exports.medicosPregrade = async (req, res) => {
   });
 };
 //obtener las especializaciones de un medico
-exports.medicosEspecialization = async (req, res) => {
-  const id = req.body.id;
-  const result = await getMedicosEspecialization(id);
-  res.json({
-    result,
-  });
-};
-//obtener todas las especializaciones
+// exports.medicosEspecialization = async (req, res) => {
+//   const id = req.body.id;
+//   const result = await getMedicosEspecialization(id);
+//   res.json({
+//     result,
+//   });
+// };
+//obtener todas las especializaciones disponibles
 exports.especializaciones = async (req, res) => {
   const result = await getEspecializations();
   res.json({
@@ -256,14 +251,6 @@ exports.getCitasMedico = async (req, res) => {
   });
 };
 
-//listado de citas agendadas de un usuarui
-exports.getCitasUser = async (req, res) => {
-  const user = req.body.id;
-  const result = await getCitasUser(user);
-  res.json({
-    result,
-  });
-};
 //cancelar cita - medico
 exports.cancelarCita = async (req, res) => {
   const id = req.body.id;
@@ -278,43 +265,6 @@ exports.cancelarCita = async (req, res) => {
 exports.completarCita = async (req, res) => {
   const id = req.body.id;
   const result = await completarCita(id);
-  res.json({
-    result,
-  });
-};
-
-//obtener el historial de citas completadas de un usuario
-
-exports.userHistorial = async (req, res) => {
-  const id = req.body.id;
-  const result = await getUserHistorial(id);
-  res.json({
-    result,
-  });
-};
-
-//calificar una cita
-exports.calificar = async (req, res) => {
-  const id = req.body.id;
-  const calificacion = req.body.calificacion;
-  const result = await calificar(id, calificacion);
-  res.json({
-    result,
-  });
-};
-exports.asistencia = async (req, res) => {
-  const id = req.body.id;
-  const asistio = req.body.asistencia;
-  const result = await asistencia(id, asistio);
-  res.json({
-    result,
-  });
-};
-
-exports.cancelarCitaUser = async (req, res) => {
-  const id = req.body.id;
-  const cita = req.body.cita;
-  const result = await cancelarCitaUser(id, cita);
   res.json({
     result,
   });

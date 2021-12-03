@@ -4,28 +4,21 @@ const {
   register,
   especializaciones,
   medicosById,
-  medicosEspecialization,
-  medicosPregrade,
   medicos,
   solicitudEstudio,
   universidades,
   agenda,
   agendaDisponible,
   agendaMedico,
-  medicosstudies,
-  agendarCita,
   getCitasMedico,
-  getCitasUser,
   medicosCiudad,
   medicosByCiudad,
   cancelarCita,
   completarCita,
-  userHistorial,
-  calificar,
-  asistencia,
   especializacionesDisponibles,
-  cancelarCitaUser,
   modalidad,
+  estudios,
+  pregrado,
 } = require("./doctorsController");
 const router = Router();
 
@@ -38,10 +31,10 @@ router.get("/medicosCiudad", medicosCiudad);
 router.post("/medicosByCiudad", medicosByCiudad);
 //obtener los datos de un medico por su id
 router.post("/medico", medicosById);
+//obtener los estudios realizados por un medico
+router.post("/medico/especializaciones", estudios);
 //obtener pregrado de un medico
-router.post("/medico/especializaciones", medicosstudies);
-//obtener pregrado de un medico
-router.post("/medico/estudios", medicosPregrade);
+router.post("/medico/estudios", pregrado);
 //obtener todas las especializaciones disponibles
 router.get("/especializacionDisponible", especializacionesDisponibles);
 //obtener todas las especializaciones
@@ -63,21 +56,9 @@ module.exports = router;
 router.get("/agenda", agendaDisponible);
 //Listado de citas de un medico
 router.post("/agendaMedico", agendaMedico);
-//agendar cita
-router.post("/agendaCita", agendarCita);
 //agenda de citas de un medicos getCitas
 router.post("/citas", getCitasMedico);
-//agenda de citas de un usuario
-router.post("/citasUsuario", getCitasUser);
 //cancelar cita - medico
 router.post("/cancelarCita", cancelarCita);
 //completar cita - medico
 router.post("/completarCita", completarCita);
-//obtener historial de citas de un usuario
-router.post("/historial", userHistorial);
-//calificar una cita
-router.post("/calificar", calificar);
-//verificar asistencia
-router.post("/asistencia", asistencia);
-//cancelar cita del lado del usuario
-router.post("/cancelarCitaUser", cancelarCitaUser);
