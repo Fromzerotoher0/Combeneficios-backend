@@ -1,11 +1,11 @@
 const mysql = require("mysql");
 
-//coneccion a la base de datos
+//conexion a la base de datos
 const connection = mysql.createConnection({
   host: "mysql-combeneficios.alwaysdata.net",
   user: "244398_anderson",
   password: "16aa3240e",
-  database: "combeneficios_main_test",
+  database: "combeneficios_1",
 });
 
 connection.connect((error) => {

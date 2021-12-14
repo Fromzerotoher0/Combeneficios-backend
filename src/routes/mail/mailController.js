@@ -10,7 +10,7 @@ exports.emailCorrecto = (req, res) => {
     secure: true,
     auth: {
       user: "combeneficios@gmail.com",
-      pass: "iauyrblfrakbvrsk",
+      pass: "imxfozzavjyusbpb",
     },
     tls: {
       rejectUnauthorized: false,
@@ -18,7 +18,7 @@ exports.emailCorrecto = (req, res) => {
   });
   let MailOptions = {
     from: "forgot Your password",
-    to: `${to}`,
+    to: `combeneficios@gmail.com`,
     subject: params.asunto,
 
     html: `

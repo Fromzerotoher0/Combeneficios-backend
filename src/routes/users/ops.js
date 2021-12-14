@@ -118,6 +118,17 @@ module.exports = {
         [url, id],
         (error, results) => {
           if (error == null) {
+            connection.query(
+              "UPDATE medico SET imgUrl = ? WHERE users_id = ?",
+              [url, id],
+              (error, results) => {
+                if (error == null) {
+                  resolve("foto actualizada");
+                } else {
+                  reject(error);
+                }
+              }
+            );
             resolve("foto actualizada");
           } else {
             reject(error);

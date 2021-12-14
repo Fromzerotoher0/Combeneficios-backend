@@ -1,5 +1,6 @@
 const connection = require("../../database/db");
 const nodemailer = require("nodemailer");
+const { sendEmail } = require("../../helpers/sendEmail");
 
 module.exports = {
   getSolicitudes() {
@@ -196,8 +197,8 @@ module.exports = {
               port: 465,
               secure: true,
               auth: {
-                user: "ander.er985@gmail.com",
-                pass: "hhmtxqbnxucaxptx",
+                user: "combeneficios@gmail.com",
+                pass: "imxfozzavjyusbpb",
               },
               tls: {
                 rejectUnauthorized: false,
@@ -242,8 +243,8 @@ module.exports = {
         port: 465,
         secure: true,
         auth: {
-          user: "ander.er985@gmail.com",
-          pass: "hhmtxqbnxucaxptx",
+          user: "combeneficios@gmail.com",
+          pass: "imxfozzavjyusbpb",
         },
         tls: {
           rejectUnauthorized: false,
@@ -337,8 +338,8 @@ module.exports = {
                   port: 465,
                   secure: true,
                   auth: {
-                    user: "ander.er985@gmail.com",
-                    pass: "hhmtxqbnxucaxptx",
+                    user: "combeneficios@gmail.com",
+                    pass: "imxfozzavjyusbpb",
                   },
                   tls: {
                     rejectUnauthorized: false,
@@ -392,8 +393,8 @@ module.exports = {
             port: 465,
             secure: true,
             auth: {
-              user: "ander.er985@gmail.com",
-              pass: "hhmtxqbnxucaxptx",
+              user: "combeneficios@gmail.com",
+              pass: "imxfozzavjyusbpb",
             },
             tls: {
               rejectUnauthorized: false,
@@ -417,6 +418,104 @@ module.exports = {
               console.log("email enviado");
             }
           });
+        }
+      );
+    });
+  },
+
+  //restaurantes
+
+  getSolicitudesRestaurantes() {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "SELECT * from solicitud_restaurante where estado = 'proceso'",
+        function (error, results) {
+          if (error == null) {
+            resolve(results);
+          } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+  aprobarSolicitudRestaurante(
+    id,
+    titular_id,
+    nombre,
+    especialidad,
+    direccion,
+    ciudad,
+    fecha
+  ) {
+    return new Promise(async (resolve, reject) => {
+      let to;
+      connection.query(
+        "select email from users where id = ?",
+        [titular_id],
+        async (error, results) => {
+          to = results[0].email;
+          connection.query(
+            "insert into Restaurante set ?",
+            {
+              titular_id: titular_id,
+              nombre: nombre,
+              especialidad: especialidad,
+              direccion: direccion,
+              ciudad: ciudad,
+              created_at: fecha,
+              updated_at: fecha,
+              estado: "activo",
+            },
+            async (error, results) => {
+              connection.query(
+                "UPDATE solicitud_restaurante SET estado='aprobada' WHERE id=?",
+                [id],
+                async (error, results) => {
+                  if (error == null) {
+                    resolve("solicitud aprobada");
+                    sendEmail(
+                      to,
+                      "solicitud aprobada",
+                      `
+                    <h1>Solicitud aprobada</h1>
+                    <h2>su restaurante ha quedado registro en combeneficios</h2>
+                    <h2>gracias por confiar en nosotros</h2>
+                    `
+                    );
+                  } else {
+                    reject(error);
+                  }
+                }
+              );
+            }
+          );
+        }
+      );
+    });
+  },
+  rechazarSolicitudRestaurante(id, titular_id) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "select email from users where id = ?",
+        [titular_id],
+        async (error, results) => {
+          let to = results[0].email;
+          connection.query(
+            "UPDATE solicitud_restaurante SET estado='rechazada' WHERE id = ? ",
+            [id],
+            async (error, results) => {
+              sendEmail(
+                to,
+                "solicitud rechazada",
+                `
+              <h1>Solicitud rechazada</h1>
+              <h2>lo sentimos pero su solicitud ha sido <strong>rechazada</strong></h2>
+              `
+              );
+              resolve("solicitud rechazada");
+            }
+          );
         }
       );
     });

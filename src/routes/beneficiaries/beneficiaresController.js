@@ -7,6 +7,7 @@ const {
   getHistorial,
   getCitas,
   agendarCita,
+  getCita,
 } = require("./ops");
 
 //controlador para registrar un nuevo beneficiario
@@ -24,7 +25,7 @@ exports.register = async (req, res, next) => {
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
-    const imgUrl = `https://localhost:7000/public/${req.file.filename}`;
+    const imgUrl = `https://localhost:7000/public/users/${req.file.filename}`;
     let titular_id = req.body.titular_id;
     const parentesco_id = req.body.parentesco;
     let hora = new Date().getHours();
@@ -57,6 +58,21 @@ exports.register = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+//controlador para buscar una cita
+exports.cita = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+    const result = await getCita(id);
+    res.status(200).json({
+      result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      msg: error,
+    });
   }
 };
 

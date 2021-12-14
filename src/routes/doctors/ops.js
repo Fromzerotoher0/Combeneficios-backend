@@ -285,13 +285,10 @@ module.exports = {
         "select id from medico where users_id = ?",
         [medico_id],
         async (error, results) => {
-          console.log(results[0].id);
           connection.query(
-            "select * from solicitud_estudio where medico_id = ?",
+            "select * from solicitud_estudio where solicitud_estudio.medico_id = ? and solicitud_estudio.estado = 'proceso'",
             [results[0].id],
             async (error, results) => {
-              console.log(results);
-              console.log(results.length);
               if (results.length < 1) {
                 connection.query(
                   "SELECT medico.id , medico.nombres , medico.apellidos,medico.documento FROM medico INNER JOIN users ON medico.users_id = ?",
@@ -554,7 +551,7 @@ module.exports = {
                         `
                       <h1>cita finalizada , muchas gracias por usar nuestros servicios</h1>
                       <h2>lo invitamos a calificar y confirmar su asistencia en el siguiente link</h2>
-                      <h2>http://45.63.109.10:4200/medicos/historial</h2>
+                      <h2>http://localhost:4200/medicos/historial</h2>
                       `
                       );
                     } else {

@@ -147,7 +147,8 @@ exports.solicitudEstudio = async (req, res, next) => {
     const medico_id = req.body.medico_id;
     const fecha_obtencion = req.body.fecha_obtencion;
     const especializaciones_id = req.body.especializaciones_id;
-    const imgUrl = `https://45.63.109.10:7000/public/${req.file.filename}`;
+    const ciudad = req.body.ciudad;
+    const imgUrl = `https://localhost:7000/public/certificados/${req.file.filename}`;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();

@@ -1,6 +1,7 @@
 const connection = require("../../database/db");
 const CryptoJS = require("crypto-js");
 const { sendEmail } = require("../../helpers/sendEmail");
+const mercadopago = require("mercadopago");
 
 module.exports = {
   //interaccion con la base de datos para registrar un nuevo beneficiario
@@ -113,6 +114,24 @@ module.exports = {
           }
         );
       }
+    });
+  },
+  //interaccion con la base de datos para obtener una cita por su id
+  getCita(id) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        `select a.* , m.nombres , m.apellidos from agenda a
+        inner join medico m on m.id = a.medico_id
+        where a.id = ?`,
+        [id],
+        async (error, results) => {
+          if (error == null) {
+            resolve(results);
+          } else {
+            reject(error);
+          }
+        }
+      );
     });
   },
   //interaccion con la base de datos para agendar una cita

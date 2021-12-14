@@ -30,7 +30,7 @@ app.use(cookieParser());
 
 //llamar al router
 app.get("/", (req, res) => {
-  res.sendFile(`${process.cwd()}/storage/code.png`);
+  res.send("api combeneficios");
 });
 app.use("/api", router);
 app.all("*", (req, res, next) => {
@@ -50,5 +50,5 @@ https
     app
   )
   .listen(process.env.PORT || 3000, () => {
-    console.log(`Server Up running in http://45.63.109.10:${process.env.PORT}`);
+    console.log(`Server Up running in http://localhost:${process.env.PORT}`);
   });

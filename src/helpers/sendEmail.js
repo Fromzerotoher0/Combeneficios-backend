@@ -8,7 +8,7 @@ module.exports = {
       secure: true,
       auth: {
         user: "combeneficios@gmail.com",
-        pass: "iauyrblfrakbvrsk",
+        pass: "imxfozzavjyusbpb",
       },
       tls: {
         rejectUnauthorized: false,

@@ -1,3 +1,4 @@
+const { request, response } = require("express");
 const {
   getSolicitudes,
   aprobarSolicitud,
@@ -5,6 +6,9 @@ const {
   SolicitudesEspecializacion,
   aceptarEspecializacion,
   rechazarEspecializacion,
+  getSolicitudesRestaurantes,
+  aprobarSolicitudRestaurante,
+  rechazarSolicitudRestaurante,
 } = require("./ops");
 
 //lista de solicitudes para ser medico
@@ -109,4 +113,56 @@ exports.rechazarEstudio = async (req, res, next) => {
     msg: "solicitud rechazada",
     result,
   });
+};
+
+exports.solicitudesRestaurante = async (request, response, next) => {
+  const result = await getSolicitudesRestaurantes();
+  response.json({
+    result,
+  });
+};
+
+exports.aprobarRestaurante = async (request, response, next) => {
+  try {
+    const id = request.body.id;
+    const titular_id = request.body.titular_id;
+    const nombre = request.body.nombre;
+    const especialidad = request.body.especialidad;
+    const direccion = request.body.direccion;
+    const ciudad = request.body.ciudad;
+    let hora = new Date().getHours();
+    let minuto = new Date().getMinutes();
+    let segundo = new Date().getSeconds();
+    let fecha = hora + ":" + minuto + ":" + segundo;
+    let date = new Date().toISOString().split("T")[0];
+    const fechaYHora = date + " " + fecha;
+
+    const result = await aprobarSolicitudRestaurante(
+      id,
+      titular_id,
+      nombre,
+      especialidad,
+      direccion,
+      ciudad,
+      fechaYHora
+    );
+    response.status(200).json({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.rechazarRestaurante = async (request, response, next) => {
+  try {
+    const id = request.body.id;
+    const titular_id = request.body.titular_id;
+    const result = await rechazarSolicitudRestaurante(id, titular_id);
+    response.status(200).json({
+      result,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
