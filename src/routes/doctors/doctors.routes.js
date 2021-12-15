@@ -56,7 +56,7 @@ module.exports = router;
 router.get("/agenda", agendaDisponible);
 //Listado de citas de un medico
 router.post("/agendaMedico", agendaMedico);
-//agenda de citas de un medicos getCitas
+//agenda de citas de un medicos 
 router.post("/citas", getCitasMedico);
 //cancelar cita - medico
 router.post("/cancelarCita", cancelarCita);

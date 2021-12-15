@@ -460,7 +460,7 @@ module.exports = {
         [user],
         async (error, result) => {
           connection.query(
-            "SELECT a.fecha , a.hora ,a.estado, a.especialidad , c.beneficiario_id ,c.agenda_id, u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha > ? and c.medico_id = ? and a.estado = 'agendada' ORDER by a.fecha",
+            "SELECT a.fecha , a.hora ,a.estado, a.especialidad ,a.modalidad,c.urlCita ,c.beneficiario_id ,c.agenda_id, u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha > ? and c.medico_id = ? and a.estado = 'agendada' ORDER by a.fecha",
             [date, result[0].id],
             function (error, result) {
               if (error == null) {
