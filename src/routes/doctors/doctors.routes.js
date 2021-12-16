@@ -19,6 +19,7 @@ const {
   modalidad,
   estudios,
   pregrado,
+  posgrado,
 } = require("./doctorsController");
 const router = Router();
 
@@ -35,6 +36,8 @@ router.post("/medico", medicosById);
 router.post("/medico/especializaciones", estudios);
 //obtener pregrado de un medico
 router.post("/medico/estudios", pregrado);
+//obtener las especializaciones de un medico
+router.post("/medico/posgrado", posgrado);
 //obtener todas las especializaciones disponibles
 router.get("/especializacionDisponible", especializacionesDisponibles);
 //obtener todas las especializaciones
@@ -56,7 +59,7 @@ module.exports = router;
 router.get("/agenda", agendaDisponible);
 //Listado de citas de un medico
 router.post("/agendaMedico", agendaMedico);
-//agenda de citas de un medicos 
+//agenda de citas de un medicos
 router.post("/citas", getCitasMedico);
 //cancelar cita - medico
 router.post("/cancelarCita", cancelarCita);

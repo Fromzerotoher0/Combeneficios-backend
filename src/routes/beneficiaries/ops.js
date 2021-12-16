@@ -137,6 +137,18 @@ module.exports = {
   //interaccion con la base de datos para agendar una cita
   agendarCita(agenda, beneficiario, fecha, medico_id, modalidad) {
     return new Promise(async (resolve, reject) => {
+      function formatDate(date) {
+        var d = new Date(date),
+          month = "" + (d.getMonth() + 1),
+          day = "" + d.getDate(),
+          year = d.getFullYear();
+
+        if (month.length < 2) month = "0" + month;
+        if (day.length < 2) day = "0" + day;
+
+        return [year, month, day].join("-");
+      }
+
       const MeetUrl = Math.floor(Math.random() * 10000000000) + 1;
 
       if (modalidad == "virtual") {
@@ -176,7 +188,7 @@ module.exports = {
                           "cita agendada",
                           `
                         <h1>su cita ha sido agendada correctamente</h1>
-                        <h2>Para el dia : ${results[0].fecha}</h2>
+                        <h2>Para el dia : ${formatDate(results[0].fecha)}</h2>
                         <h2>a la hora : ${results[0].hora}</h2>
                         <h2>debe entrar a este link a la fecha y hora de la cita para ser atendindo</h2>
                         <a href=https://meet.jit.si/${MeetUrl}>https://meet.jit.si/combeneficios${MeetUrl}</a>
@@ -231,7 +243,7 @@ module.exports = {
                           "cita agendada",
                           `
                         <h1>su cita ha sido agendada correctamente</h1>
-                        <h2>Para el dia : ${results[0].fecha}</h2>
+                        <h2>Para el dia : ${formatDate(results[0].fecha)}</h2>
                         <h2>a la hora : ${results[0].hora}</h2>
                         `
                         );

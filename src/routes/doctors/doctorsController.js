@@ -115,18 +115,19 @@ exports.pregrado = async (req, res) => {
     result,
   });
 };
-//obtener las especializaciones de un medico
-// exports.medicosEspecialization = async (req, res) => {
-//   const id = req.body.id;
-//   const result = await getMedicosEspecialization(id);
-//   res.json({
-//     result,
-//   });
-// };
-//obtener todas las especializaciones disponibles
+
 exports.especializaciones = async (req, res) => {
   const result = await getEspecializations();
   res.json({
+    result,
+  });
+};
+
+//obtener las especializaciones de un medico
+exports.posgrado = async (req, res) => {
+  const id = req.body.id;
+  const result = await getMedicosEspecialization(id);
+  res.status(200).json({
     result,
   });
 };

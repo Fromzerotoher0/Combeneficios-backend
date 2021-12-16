@@ -30,7 +30,17 @@ module.exports = {
               [id],
               (error, results) => {
                 if (error == null) {
-                  resolve(results);
+                  connection.query(
+                    `update medico set nombres = '${nombres}' , apellidos='${apellidos}' where medico.users_id = ?`,
+                    [id],
+                    (error, results) => {
+                      if (error == null) {
+                        resolve(results);
+                      } else {
+                        reject(error);
+                      }
+                    }
+                  );
                 } else {
                   reject(error);
                 }
