@@ -196,6 +196,28 @@ module.exports = {
                         );
                       }
                     );
+                    connection.query(
+                      `select  email from users u
+                      inner join medico m on m.users_id = u.id
+                      WHERE m.id = ?
+                      `,
+                      [medico_id],
+                      function (error, results) {
+                        to = results[0].email;
+                        sendEmail(
+                          to,
+                          "cita agendada",
+                          `
+                          <h1>buen dia</h1>
+                            <h2>se ha asignado una cita para : </h2>
+                          <h2>Para el dia : ${formatDate(results[0].fecha)}</h2>
+                          <h2>a la hora : ${results[0].hora}</h2>
+                          <h2>debe entrar a este link a la fecha y hora de la cita para atender al paciente</h2>
+                          <a href=https://meet.jit.si/${MeetUrl}>https://meet.jit.si/combeneficios${MeetUrl}</a>
+                          `
+                        );
+                      }
+                    );
                   } else {
                     reject(error);
                   }
@@ -252,6 +274,26 @@ module.exports = {
                   } else {
                     reject(error);
                   }
+                }
+              );
+              connection.query(
+                `select  email from users u
+              inner join medico m on m.users_id = u.id
+              WHERE m.id = ?
+              `,
+                [medico_id],
+                function (error, results) {
+                  to = results[0].email;
+                  sendEmail(
+                    to,
+                    "cita agendada",
+                    `
+                  <h1>buen dia</h1>
+                    <h2>se ha asignado una cita para : </h2>
+                  <h2>Para el dia : ${formatDate(results[0].fecha)}</h2>
+                  <h2>a la hora : ${results[0].hora}</h2>
+                  `
+                  );
                 }
               );
             } else {
@@ -333,8 +375,7 @@ module.exports = {
   calificar(id, calificacion) {
     return new Promise(async (resolve, result) => {
       connection.query(
-        `
-          update cita set calificacion = ?
+        ` update cita set calificacion = ?
           where id = ?
           `,
         [calificacion, id],

@@ -88,7 +88,7 @@ exports.agendarCita = async (req, res) => {
   let fecha = hora + ":" + minuto + ":" + segundo;
   let date = new Date().toISOString().split("T")[0];
   let fechaYHora = date + " " + fecha;
-  console.log(`beneficiario ${beneficiario} - agenda ${agenda}`);
+
   const result = await agendarCita(
     agenda,
     beneficiario,

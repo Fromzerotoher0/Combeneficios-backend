@@ -1,4 +1,12 @@
-const { register, addProduct } = require("./restaurants.ops");
+const {
+  register,
+  addProduct,
+  createOrder,
+  addDetails,
+  acceptOrder,
+  rejectOrder,
+  completeOrder,
+} = require("./restaurants.ops");
 
 module.exports = {
   async registerController(request, response, next) {
@@ -24,10 +32,8 @@ module.exports = {
       next(error);
     }
   },
-
   async addProductController(request, response, next) {
     try {
-      console.log("add controller");
       const restaurante_id = request.body.restaurante_id;
       const articulo = request.body.articulo;
       const descripcion = request.body.descripcion;
@@ -53,6 +59,68 @@ module.exports = {
         error: false,
         msg: "solicitud enviada",
         result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  async createOrderController(request, response, next) {
+    try {
+      const userId = request.body.userId;
+      const restaurant = request.body.restaurant;
+      let hora = new Date().getHours();
+      let minuto = new Date().getMinutes();
+      let segundo = new Date().getSeconds();
+      let fecha = hora + ":" + minuto + ":" + segundo;
+      let date = new Date().toISOString().split("T")[0];
+      const result = await createOrder(userId, restaurant, date, fecha);
+      response.status(200).json({
+        msg: "orden creada",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  async acceptOrderController(request, response, next) {
+    try {
+      const id = request.body.id;
+      const result = await acceptOrder(id);
+      response.status(200).json({
+        msg: "orden aceptada",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  async rejectOrderController(request, response, next) {
+    try {
+      const id = request.body.id;
+      const result = await rejectOrder(id);
+      response.status(200).json({
+        msg: "orden rechazada",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  async orderDetailsController(request, response, next) {
+    try {
+      const details = request.body.details;
+      const order = request.body.id;
+      const result = await addDetails(order, details);
+      response.status(200).json({
+        msg: "pedido creado",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  async completeOrderController(request, response, next) {
+    try {
+      const id = request.body.id;
+      const result = await completeOrder(id);
+      response.status(200).json({
+        msg: "orden completada",
       });
     } catch (error) {
       next(error);

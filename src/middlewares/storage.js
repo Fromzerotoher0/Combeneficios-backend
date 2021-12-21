@@ -3,7 +3,7 @@ const multer = require("multer");
 //middleware para almacenar imagenes en el servidor
 const storage = multer.diskStorage({
   destination: function (request, file, cb) {
-    console.log(request.body);
+    console.log(JSON.parse(JSON.stringify(request.body)));
     if (request.body.directorio == "menu") {
       cb(null, "./storage/menu");
     } else if (request.body.directorio == "certificados") {
