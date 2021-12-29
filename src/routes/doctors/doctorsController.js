@@ -19,6 +19,7 @@ const {
   completarCita,
   getEspecs,
   getModalidad,
+  getTarifa,
 } = require("./ops");
 
 //registrar un medico
@@ -32,6 +33,7 @@ exports.register = async (req, res, next) => {
     const universidad = req.body.universidad;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
+    const tarifa = req.body.tarifa;
 
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
@@ -47,7 +49,8 @@ exports.register = async (req, res, next) => {
       fechaYHora,
       universidad,
       departamento,
-      ciudad
+      ciudad,
+      tarifa
     );
     res.status(200).json({
       error: false,
@@ -149,7 +152,7 @@ exports.solicitudEstudio = async (req, res, next) => {
     const fecha_obtencion = req.body.fecha_obtencion;
     const especializaciones_id = req.body.especializaciones_id;
     const ciudad = req.body.ciudad;
-    const imgUrl = `https://45.63.109.10:7000/public/certificados/${req.file.filename}`;
+    const imgUrl = `https://localhost:7000/public/certificados/${req.file.filename}`;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
@@ -270,4 +273,12 @@ exports.completarCita = async (req, res) => {
   res.json({
     result,
   });
+};
+
+//obtener el valor de la tarifa de una cita
+exports.tarifas = async (req, res) => {
+  const id = req.body.id;
+  const titulo = req.body.titulo;
+  const result = await getTarifa(id, titulo);
+  res.json({ result });
 };

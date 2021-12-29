@@ -27,7 +27,8 @@ module.exports = {
     fechaYHora,
     universidad,
     departamento,
-    ciudad
+    ciudad,
+    tarifa
   ) {
     return new Promise(async (resolve, reject) => {
       console.log(universidad);
@@ -104,6 +105,7 @@ module.exports = {
                           titulo: "medicina",
                           tipo_estudio: 1,
                           universidad: universidad,
+                          tarifa: tarifa,
                           created_at: fechaYHora,
                           updated_at: fechaYHora,
                         },
@@ -128,6 +130,7 @@ module.exports = {
                           tipo_estudio: 1,
                           universidad: universidad,
                           fecha_obtencion: fechaYHora,
+                          tarifa: tarifa,
                           created_at: fechaYHora,
                           updated_at: fechaYHora,
                           estado: "activo",

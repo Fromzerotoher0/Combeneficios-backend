@@ -29,6 +29,7 @@ exports.aceptar = async (req, res, next) => {
     const universidad = req.body.universidad;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
+    const tarifa = req.body.tarifa;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
@@ -45,7 +46,8 @@ exports.aceptar = async (req, res, next) => {
       fechaYHora,
       universidad,
       departamento,
-      ciudad
+      ciudad,
+      tarifa
     );
     res.status(200).json({
       error: false,

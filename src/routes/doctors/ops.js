@@ -10,7 +10,8 @@ module.exports = {
     fechaYHora,
     universidad,
     departamento,
-    ciudad
+    ciudad,
+    tarifa
   ) {
     return new Promise(async (resolve, reject) => {
       let nombres = "";
@@ -70,6 +71,7 @@ module.exports = {
                             ciudad: ciudad,
                             especializaciones_id: 1,
                             correo: correo,
+                            tarifa: tarifa,
                             created_at: fechaYHora,
                             updated_at: fechaYHora,
                             estado: "proceso",
@@ -551,7 +553,7 @@ module.exports = {
                         `
                       <h1>cita finalizada , muchas gracias por usar nuestros servicios</h1>
                       <h2>lo invitamos a calificar y confirmar su asistencia en el siguiente link</h2>
-                      <h2>http://45.63.109.10:4200/medicos/historial</h2>
+                      <h2>http://localhost:4200/medicos/historial</h2>
                       `
                       );
                     } else {
@@ -577,6 +579,28 @@ module.exports = {
           } else {
             resolve(results);
           }
+        }
+      );
+    });
+  },
+
+  getTarifa(medico_id, titulo) {
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        "SELECT medico.id FROM medico where medico.users_id = ? ",
+        [medico_id],
+        (error, result) => {
+          connection.query(
+            "select tarifa from estudios e where e.medico_id = ? and titulo = ? ",
+            [result[0].id, titulo],
+            (error, results) => {
+              if (error == null) {
+                resolve(results[0].tarifa);
+              } else {
+                reject(error);
+              }
+            }
+          );
         }
       );
     });
