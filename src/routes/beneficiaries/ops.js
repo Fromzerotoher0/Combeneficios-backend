@@ -167,7 +167,6 @@ module.exports = {
                       "SELECT * from agenda where id = ?",
                       [agenda],
                       function (error, results) {
-                        console.log(modalidad);
                         sendEmail(
                           to,
                           "cita agendada",
@@ -175,7 +174,8 @@ module.exports = {
                         <h1>su cita ha sido agendada correctamente</h1>
                         <h2>Para el dia : ${formatDate(results[0].fecha)}</h2>
                         <h2>a la hora : ${results[0].hora}</h2>
-                        <h2>debe entrar a este link a la fecha y hora de la cita para ser atendindo</h2>
+                        <h2>una vez el medico haya aceptado la cita</h2>
+                        <h2>debe entrar a este link a la fecha y hora de la cita para ser atendido</h2>
                         <a href=https://meet.jit.si/${MeetUrl}>https://meet.jit.si/combeneficios${MeetUrl}</a>
                         `
                         );

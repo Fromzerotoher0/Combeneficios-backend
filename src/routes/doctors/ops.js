@@ -443,8 +443,8 @@ module.exports = {
     console.log(date);
     return new Promise(async (resolve, reject) => {
       connection.query(
-        "SELECT * from agenda where agenda.estado ='activo' and medico_id = ?",
-        [medico_id],
+        "SELECT * from agenda where agenda.estado ='activo' and medico_id = ? and fecha >= ? ",
+        [medico_id, date],
         function (error, results) {
           if (error == null) {
             resolve(results);
@@ -464,7 +464,7 @@ module.exports = {
         [user],
         async (error, result) => {
           connection.query(
-            "SELECT a.fecha , a.hora ,a.estado, a.especialidad ,a.modalidad,c.urlCita ,c.beneficiario_id ,c.agenda_id, u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha > ? and c.medico_id = ? and a.estado = 'agendada' ORDER by a.fecha",
+            "SELECT a.fecha , a.hora ,a.estado, a.especialidad ,a.modalidad,c.urlCita ,c.beneficiario_id ,c.agenda_id, u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha >= ? and c.medico_id = ? and a.estado = 'agendada' ORDER by a.fecha",
             [date, result[0].id],
             function (error, result) {
               if (error == null) {
@@ -489,6 +489,22 @@ module.exports = {
           if (error == null) {
             resolve(results);
           } else {
+            reject(error);
+          }
+        }
+      );
+    });
+  },
+
+  aceptarCita(id, email) {
+    console.log(id);
+    return new Promise(async (resolve, reject) => {
+      connection.query(
+        `UPDATE cita SET estado='agendada'
+            WHERE agenda_id=?`,
+        [id],
+        (error, results) => {
+          if (error) {
             reject(error);
           }
         }
