@@ -115,7 +115,7 @@ module.exports = {
   //cambiar foto de perfil
   async cambiarFoto(req, res, next) {
     try {
-      const imgUrl = `https://localhost:7000/public/users/${req.file.filename}`;
+      const imgUrl = `https://45.63.109.10:7000/public/users/${req.file.filename}`;
       const id = req.body.id;
       console.log("imagen");
       console.log(imgUrl);

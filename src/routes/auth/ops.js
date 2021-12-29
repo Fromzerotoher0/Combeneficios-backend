@@ -37,7 +37,13 @@ module.exports = {
               const ciudad = results[0].ciudad;
               //generacion del JWT
               const token = jwt.sign(
-                { id: id, ciudad: ciudad, tipo_usuario: tipo_usuario },
+                {
+                  id: id,
+                  ciudad: ciudad,
+                  nombres: userName,
+                  apellidos: lastName,
+                  tipo_usuario: tipo_usuario,
+                },
                 process.env.SECRET_KEY,
                 {
                   expiresIn: process.env.JWT_EXPIRE,

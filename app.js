@@ -50,5 +50,5 @@ https
     app
   )
   .listen(process.env.PORT || 3000, () => {
-    console.log(`Server Up running in http://localhost:${process.env.PORT}`);
+    console.log(`Server Up running in http://45.63.109.10:${process.env.PORT}`);
   });

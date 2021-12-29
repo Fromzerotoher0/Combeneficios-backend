@@ -44,72 +44,57 @@ module.exports = {
         reject(new Error("correo electronico no valido"));
       } else {
         connection.query(
-          //consulta para verificar que el correo no este ocupado
-          "SELECT * from users where email = ?",
-          [correo],
+          //consulta para obtener el nombre del departamento por medio de su id
+          "SELECT departamento from departamentos d where id_departamento = ?",
+          [departamento],
           async (error, results) => {
-            if (error == null) {
-              if (results.length > 0) {
-                reject(new Error("correo electronico en uso"));
-              } else {
-                connection.query(
-                  //consulta para obtener el nombre del departamento por medio de su id
-                  "SELECT departamento from departamentos d where id_departamento = ?",
-                  [departamento],
-                  async (error, results) => {
-                    departamento_string = results[0].departamento;
-                  }
-                );
+            departamento_string = results[0].departamento;
+          }
+        );
 
-                connection.query(
-                  //consulta para verificar que el usuario no exista en la base de datos
-                  "SELECT * FROM users where nro_documento = ?",
-                  [documento],
-                  async (error, results) => {
-                    if (results.length == 0) {
-                      connection.query(
-                        //insert del usuario en la base de datos
-                        "INSERT INTO users SET ?",
-                        {
-                          tipo_id: tipo,
-                          nro_documento: documento,
-                          nombres: nombres,
-                          apellidos: apellidos,
-                          sexo: sexo,
-                          email: correo,
-                          fecha_nacimiento: fecha,
-                          departamento: departamento_string,
-                          ciudad: ciudad,
-                          contrasena: passHash,
-                          telefono: telefono,
-                          imgUrl: imgUrl,
-                          parentesco_id: parentesco_id,
-                          tipo_usuario: 3,
-                          titular_id: titular_id,
-                          created_at: fechaYHora,
-                          updated_at: fechaYHora,
-                          estado: "activo",
-                        },
-                        (error) => {
-                          if (error) {
-                            reject(error);
-                          } else {
-                            resolve(new Error("usuario creado"));
-                          }
-                        }
-                      );
-                    } else {
-                      reject(
-                        new Error(
-                          `el documento ${documento} ya esta registrado en la base de datos`
-                        )
-                      );
-                    }
+        connection.query(
+          //consulta para verificar que el usuario no exista en la base de datos
+          "SELECT * FROM users where nro_documento = ?",
+          [documento],
+          async (error, results) => {
+            if (results.length == 0) {
+              connection.query(
+                //insert del usuario en la base de datos
+                "INSERT INTO users SET ?",
+                {
+                  tipo_id: tipo,
+                  nro_documento: documento,
+                  nombres: nombres,
+                  apellidos: apellidos,
+                  sexo: sexo,
+                  email: correo,
+                  fecha_nacimiento: fecha,
+                  departamento: departamento_string,
+                  ciudad: ciudad,
+                  contrasena: passHash,
+                  telefono: telefono,
+                  imgUrl: imgUrl,
+                  parentesco_id: parentesco_id,
+                  tipo_usuario: 3,
+                  titular_id: titular_id,
+                  created_at: fechaYHora,
+                  updated_at: fechaYHora,
+                  estado: "activo",
+                },
+                (error) => {
+                  if (error) {
+                    reject(error);
+                  } else {
+                    resolve("usuario creado");
                   }
-                );
-              } ////
+                }
+              );
             } else {
-              reject(error);
+              reject(
+                new Error(
+                  `el documento ${documento} ya esta registrado en la base de datos`
+                )
+              );
             }
           }
         );

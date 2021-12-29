@@ -49,9 +49,9 @@ router.post("/mercadopago", async (request, response) => {
         },
       ],
       back_urls: {
-        success: "http://localhost:4200/beneficiarios/notifications",
-        failure: "http://localhost:4200/beneficiarios/notifications",
-        pending: "http://localhost:4200/beneficiarios/notifications",
+        success: "http://45.63.109.10:4200/beneficiarios/notifications",
+        failure: "http://45.63.109.10:4200/beneficiarios/notifications",
+        pending: "http://45.63.109.10:4200/beneficiarios/notifications",
       },
       payment_methods: {
         excludex_payment_methods: [
@@ -60,7 +60,7 @@ router.post("/mercadopago", async (request, response) => {
           },
         ],
       },
-      // notification_url: "https://localhost:7000/api/beneficiaries/mercadopago",
+      // notification_url: "https://45.63.109.10:7000/api/beneficiaries/mercadopago",
     };
     const response2 = await mercadopago.preferences.create(preference);
     const preferenceId = response2.body.id;
