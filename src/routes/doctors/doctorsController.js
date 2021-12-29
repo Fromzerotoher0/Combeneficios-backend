@@ -153,6 +153,7 @@ exports.solicitudEstudio = async (req, res, next) => {
     const especializaciones_id = req.body.especializaciones_id;
     const ciudad = req.body.ciudad;
     const imgUrl = `https://localhost:7000/public/certificados/${req.file.filename}`;
+    const tarifa = req.body.tarifa;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();
     let segundo = new Date().getSeconds();
@@ -166,8 +167,13 @@ exports.solicitudEstudio = async (req, res, next) => {
       fecha_obtencion,
       especializaciones_id,
       imgUrl,
-      fechaYHora
+      fechaYHora,
+      tarifa
     );
+
+    res.status(200).json({
+      msg: "solicitud enviada",
+    });
   } catch (error) {
     next(error);
   }

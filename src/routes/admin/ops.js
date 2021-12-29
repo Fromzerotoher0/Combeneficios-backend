@@ -296,7 +296,8 @@ module.exports = {
     medico_id,
     fecha_obtencion,
     fechaYHora,
-    especializacion
+    especializacion,
+    tarifa
   ) {
     return new Promise(async (resolve, reject) => {
       let to = "";
@@ -313,6 +314,7 @@ module.exports = {
               universidad: universidad,
               tipo_estudio: tipo_estudio,
               medico_id: medico_id,
+              tarifa: tarifa,
               created_at: fechaYHora,
               updated_at: fechaYHora,
               estado: "activo",

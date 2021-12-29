@@ -81,6 +81,7 @@ exports.aceptarEstudio = async (req, res, next) => {
   const medico_id = req.body.medico_id;
   const fecha_obtencion = req.body.fecha_obtencion;
   const especializacion = req.body.especializacion;
+  const tarifa = req.body.tarifa;
 
   let hora = new Date().getHours();
   let minuto = new Date().getMinutes();
@@ -97,7 +98,8 @@ exports.aceptarEstudio = async (req, res, next) => {
     medico_id,
     fecha_obtencion,
     fechaYHora,
-    especializacion
+    especializacion,
+    tarifa
   );
   res.status(200).json({
     error: false,

@@ -277,7 +277,8 @@ module.exports = {
     fecha_obtencion,
     especializaciones_id,
     imgUrl,
-    fechaYHora
+    fechaYHora,
+    tarifa
   ) {
     let nombres = "";
     let apellidos = "";
@@ -312,6 +313,7 @@ module.exports = {
                         especializaciones_id: especializaciones_id,
                         imgUrl: imgUrl,
                         universidad: universidad,
+                        tarifa: tarifa,
                         fecha_obtencion: fecha_obtencion,
                         created_at: fechaYHora,
                         updated_at: fechaYHora,
