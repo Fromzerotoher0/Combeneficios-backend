@@ -464,7 +464,7 @@ module.exports = {
         [user],
         async (error, result) => {
           connection.query(
-            "SELECT a.fecha , a.hora ,a.estado, a.especialidad ,a.modalidad,c.urlCita ,c.beneficiario_id ,c.agenda_id, u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha >= ? and c.medico_id = ? and a.estado = 'agendada' ORDER by a.fecha",
+            "SELECT a.fecha , a.hora ,a.estado, a.especialidad ,a.modalidad,c.urlCita ,c.beneficiario_id ,c.agenda_id,c.estado ,u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha >= ? and c.medico_id = ? and a.estado = 'agendada' or a.estado = 'proceso' ORDER by a.fecha",
             [date, result[0].id],
             function (error, result) {
               if (error == null) {
@@ -496,16 +496,39 @@ module.exports = {
     });
   },
 
-  aceptarCita(id, email) {
-    console.log(id);
+  aceptarCita(id) {
+    function formatDate(date) {
+      var d = new Date(date),
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
+
+      return [year, month, day].join("-");
+    }
     return new Promise(async (resolve, reject) => {
       connection.query(
-        `UPDATE cita SET estado='agendada'
+        `UPDATE cita SET estado='activo'
             WHERE agenda_id=?`,
         [id],
         (error, results) => {
           if (error) {
             reject(error);
+          } else {
+            connection.query(
+              "select email from users where id = ?",
+              [results[0].beneficiario_id],
+              (error, results) => {
+                let to = results[0].email;
+                connection.query(
+                  "select * from agenda a inner join cita c on c.agenda_id = a.id where a.id = ?",
+                  [id],
+                  (error, results) => {}
+                );
+              }
+            );
           }
         }
       );
