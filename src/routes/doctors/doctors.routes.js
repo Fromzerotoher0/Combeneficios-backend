@@ -21,6 +21,7 @@ const {
   pregrado,
   posgrado,
   tarifas,
+  aceptar,
 } = require("./doctorsController");
 const router = Router();
 
@@ -68,3 +69,5 @@ router.post("/cancelarCita", cancelarCita);
 router.post("/completarCita", completarCita);
 //obtener el valor de las tarifas
 router.post("/tarifas", tarifas);
+//aceptar cita - medico
+router.post("/aceptar", aceptar);

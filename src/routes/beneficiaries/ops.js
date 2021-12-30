@@ -146,7 +146,7 @@ module.exports = {
             urlCita: `https://meet.jit.si/combeneficios${MeetUrl}`,
             created_at: fecha,
             updated_at: fecha,
-            estado: "activo",
+            estado: "proceso",
           },
           async (error, result) => {
             if (error == null) {
@@ -164,24 +164,6 @@ module.exports = {
                   to = results[0].email;
                   if (error == null) {
                     connection.query(
-                      "SELECT * from agenda where id = ?",
-                      [agenda],
-                      function (error, results) {
-                        sendEmail(
-                          to,
-                          "cita agendada",
-                          `
-                        <h1>su cita ha sido agendada correctamente</h1>
-                        <h2>Para el dia : ${formatDate(results[0].fecha)}</h2>
-                        <h2>a la hora : ${results[0].hora}</h2>
-                        <h2>una vez el medico haya aceptado la cita</h2>
-                        <h2>debe entrar a este link a la fecha y hora de la cita para ser atendido</h2>
-                        <a href=https://meet.jit.si/${MeetUrl}>https://meet.jit.si/combeneficios${MeetUrl}</a>
-                        `
-                        );
-                      }
-                    );
-                    connection.query(
                       `select  email from users u
                       inner join medico m on m.users_id = u.id
                       WHERE m.id = ?
@@ -195,10 +177,7 @@ module.exports = {
                           `
                           <h1>buen dia</h1>
                             <h2>se ha asignado una cita para : </h2>
-                          <h2>Para el dia : ${formatDate(results[0].fecha)}</h2>
-                          <h2>a la hora : ${results[0].hora}</h2>
-                          <h2>debe entrar a este link a la fecha y hora de la cita para atender al paciente</h2>
-                          <a href=https://meet.jit.si/${MeetUrl}>https://meet.jit.si/combeneficios${MeetUrl}</a>
+                            <h2>por favor entre en la plataforma para mas informacion</h2>
                           `
                         );
                       }
@@ -223,7 +202,7 @@ module.exports = {
             urlCita: null,
             created_at: fecha,
             updated_at: fecha,
-            estado: "activo",
+            estado: "proceso",
           },
           async (error, result) => {
             if (error == null) {

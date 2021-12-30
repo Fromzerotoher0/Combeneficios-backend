@@ -20,6 +20,7 @@ const {
   getEspecs,
   getModalidad,
   getTarifa,
+  aceptarCita,
 } = require("./ops");
 
 //registrar un medico
@@ -286,5 +287,12 @@ exports.tarifas = async (req, res) => {
   const id = req.body.id;
   const titulo = req.body.titulo;
   const result = await getTarifa(id, titulo);
+  res.json({ result });
+};
+
+//aceptar citas  - medico
+exports.aceptar = async (req, res) => {
+  const id = req.body.id;
+  const result = await aceptarCita(id);
   res.json({ result });
 };

@@ -438,6 +438,7 @@ module.exports = {
       });
     });
   },
+  //obtener la agenda disponible de un medico
   getAgendaMedico(medico_id) {
     let date = new Date().toISOString().split("T")[0];
     console.log(date);
@@ -464,7 +465,7 @@ module.exports = {
         [user],
         async (error, result) => {
           connection.query(
-            "SELECT a.fecha , a.hora ,a.estado, a.especialidad ,a.modalidad,c.urlCita ,c.beneficiario_id ,c.agenda_id,c.estado ,u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha >= ? and c.medico_id = ? and a.estado = 'agendada' or a.estado = 'proceso' ORDER by a.fecha",
+            "SELECT a.fecha , a.hora ,a.especialidad ,a.modalidad,c.urlCita ,c.beneficiario_id ,c.agenda_id,c.estado ,u.nombres , u.apellidos , u.email  FROM agenda a inner join cita c on c.agenda_id = a.id inner join users u on u.id = c.beneficiario_id where a.fecha >= ? and c.medico_id = ? and a.estado = 'agendada' or a.estado = 'proceso' ORDER by a.fecha",
             [date, result[0].id],
             function (error, result) {
               if (error == null) {
@@ -495,7 +496,7 @@ module.exports = {
       );
     });
   },
-
+  //aceptar cita - medico
   aceptarCita(id) {
     function formatDate(date) {
       var d = new Date(date),
@@ -518,14 +519,48 @@ module.exports = {
             reject(error);
           } else {
             connection.query(
-              "select email from users where id = ?",
-              [results[0].beneficiario_id],
+              "select * from agenda a inner join cita c on c.agenda_id = a.id where a.id = ?",
+              [id],
               (error, results) => {
-                let to = results[0].email;
+                const fecha = results[0].fecha;
+                const hora = results[0].hora;
+                const meetUrl = results[0].urlCita;
+                console.log(meetUrl);
                 connection.query(
-                  "select * from agenda a inner join cita c on c.agenda_id = a.id where a.id = ?",
-                  [id],
-                  (error, results) => {}
+                  "select email from users where id = ?",
+                  [results[0].beneficiario_id],
+                  (error, results) => {
+                    if (error) {
+                      reject(error);
+                    } else {
+                      let to = results[0].email;
+                      if (meetUrl == null) {
+                        sendEmail(
+                          to,
+                          "cita confirmada",
+                          `
+                        <h1>su cita ha sido confirmada correctamente</h1>
+                        <h2>Para el dia : ${formatDate(fecha)}</h2>
+                        <h2>a la hora : ${hora}</h2>
+                        `
+                        );
+                        resolve("cita confirmada");
+                      } else {
+                        sendEmail(
+                          to,
+                          "cita confirmada",
+                          `
+                        <h1>su cita ha sido confirmada correctamente</h1>
+                        <h2>Para el dia : ${formatDate(fecha)}</h2>
+                        <h2>a la hora : ${hora}</h2>
+                        <h2>debe entrar a este link a la fecha y hora de la cita para ser atendido</h2>
+                        <a href=https://meet.jit.si/${meetUrl}>https://meet.jit.si/combeneficios${meetUrl}</a>
+                        `
+                        );
+                        resolve("cita confirmada");
+                      }
+                    }
+                  }
                 );
               }
             );
