@@ -153,7 +153,7 @@ exports.solicitudEstudio = async (req, res, next) => {
     const fecha_obtencion = req.body.fecha_obtencion;
     const especializaciones_id = req.body.especializaciones_id;
     const ciudad = req.body.ciudad;
-    const imgUrl = `https://localhost:7000/public/certificados/${req.file.filename}`;
+    const imgUrl = `https://api.combeneficios.co:7000/public/certificados/${req.file.filename}`;
     const tarifa = req.body.tarifa;
     let hora = new Date().getHours();
     let minuto = new Date().getMinutes();

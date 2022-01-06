@@ -25,7 +25,7 @@ exports.register = async (req, res, next) => {
     const fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
-    const imgUrl = `https://localhost:7000/public/users/${req.file.filename}`;
+    const imgUrl = `https://api.combeneficios.co:7000/public/users/${req.file.filename}`;
     let titular_id = req.body.titular_id;
     const parentesco_id = req.body.parentesco;
     let hora = new Date().getHours();

@@ -35,7 +35,7 @@ router.post("/mercadopago", async (request, response) => {
     // Agrega credenciales
     mercadopago.configure({
       access_token:
-        "TEST-6661206719455423-120915-5f6bfd42cb0d681dbdaf2f5b78d0d309-759574360",
+        "APP_USR-6661206719455423-120915-e22dea365f808d5cedc8ef78e1ab34d2-759574360",
     });
 
     let preference = {
@@ -49,9 +49,9 @@ router.post("/mercadopago", async (request, response) => {
         },
       ],
       back_urls: {
-        success: "http://localhost:4200/beneficiarios/notifications",
-        failure: "http://localhost:4200/beneficiarios/notifications",
-        pending: "http://localhost:4200/beneficiarios/notifications",
+        success: "https://app.combeneficios.co/beneficiarios/notifications",
+        failure: "https://app.combeneficios.co/beneficiarios/notifications",
+        pending: "https://app.combeneficios.co/beneficiarios/notifications",
       },
       payment_methods: {
         excludex_payment_methods: [
@@ -60,7 +60,7 @@ router.post("/mercadopago", async (request, response) => {
           },
         ],
       },
-      // notification_url: "https://localhost:7000/api/beneficiaries/mercadopago",
+      // notification_url: "https://api.combeneficios.co:7000/api/beneficiaries/mercadopago",
     };
     const response2 = await mercadopago.preferences.create(preference);
     const preferenceId = response2.body.id;

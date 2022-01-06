@@ -44,11 +44,13 @@ app.use(errorHandler);
 https
   .createServer(
     {
-      cert: fs.readFileSync("certificado.crt"),
-      key: fs.readFileSync("key.pem"),
+      cert: fs.readFileSync("/etc/letsencrypt/live/combeneficios.co/cert.pem"),
+      key: fs.readFileSync(
+        "/etc/letsencrypt/live/combeneficios.co/privkey.pem"
+      ),
     },
     app
   )
   .listen(process.env.PORT || 3000, () => {
-    console.log(`Server Up running in http://localhost:${process.env.PORT}`);
+    console.log(`Server Up running in http://45.63.109.10:${process.env.PORT}`);
   });

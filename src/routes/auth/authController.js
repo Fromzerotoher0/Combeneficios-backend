@@ -15,7 +15,7 @@ exports.register = async (req, res, next) => {
     let fecha_nac = req.body.fecha_nacimiento;
     const departamento = req.body.departamento;
     const ciudad = req.body.ciudad;
-    const imgUrl = `https://localhost:7000/public/users/${req.file.filename}`;
+    const imgUrl = `https://api.combeneficios.co:7000/public/users/${req.file.filename}`;
 
     function formatDate(date) {
       var d = new Date(date),
